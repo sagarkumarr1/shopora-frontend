@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+:root {
+  --background: #FDFBF7;
+  /* Warm Cream */
+  --foreground: #2D2D2D;
+  /* Charcoal - High Contrast */
+  --primary: #C08C6C;
+  /* Clay / Terra-cotta */
+  --secondary: #E5E0D8;
+  /* Soft Beige */
+}
+
+@theme {
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-playfair);
+  --font-mono: var(--font-outfit);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #1C1917;
+    /* Warm Dark */
+    --foreground: #FDFBF7;
+    /* Cream Text */
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar for Webkit */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d6d3d1;
+  /* stone-300 */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a29e;
+  /* stone-400 */
+}
+
+/* Utility for hiding scrollbar but keeping function */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
