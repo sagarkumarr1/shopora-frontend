@@ -113,17 +113,14 @@ export default function Navbar() {
                 <div className="flex justify-between items-center h-14 md:h-20 gap-4 md:gap-8">
 
                     {/* Logo */}
-                    <div className="flex-shrink-0 flex items-center gap-2 cursor-pointer group" onClick={() => navigate.push('/')}>
+                    <div className="flex-shrink-0 flex items-center cursor-pointer group" onClick={() => navigate.push('/')}>
                         <div className="bg-transparent p-0 rounded-xl transition-transform duration-300 hover:scale-105">
                             <img
                                 src="/logo.png"
                                 alt="ApniShop Logo"
-                                className="h-10 w-auto md:h-12 object-contain"
+                                className="h-12 w-auto md:h-14 object-contain"
                             />
                         </div>
-                        <span className="text-xl md:text-2xl font-bold text-stone-900 tracking-tight font-outfit group-hover:text-violet-700 transition-colors">
-                            ApniShop
-                        </span>
                     </div>
 
                     {/* Desktop Search Bar - Hidden on Mobile */}
