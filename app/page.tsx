@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { IoIosArrowDown } from "react-icons/io";
 import Navbar from '@/components/Navbar';
 import CategoryBar from '@/components/CategoryBar';
 import HeroSlider from '@/components/HeroSlider';
