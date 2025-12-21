@@ -2,7 +2,7 @@
 
 import Navbar from '@/components/Navbar';
 import { useState, useEffect } from 'react';
-import { FaHeart, FaStar, FaShoppingCart, FaBolt, FaTruck, FaUndo, FaMoneyBillWave, FaRegHeart, FaCheckCircle } from 'react-icons/fa';
+import { FaHeart, FaStar, FaShoppingCart, FaBolt, FaTruck, FaUndo, FaMoneyBillWave, FaRegHeart, FaCheckCircle, FaChevronRight } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { addItem, setCheckoutItems } from '@/store/cartSlice';
 import { useRouter } from 'next/navigation';
@@ -158,6 +158,8 @@ export default function ProductClientView({ product }: { product: any }) {
         }
     };
 
+    const [isWishlisted, setIsWishlisted] = useState(false);
+
     if (!product) {
         return (
             <div className="min-h-screen bg-[#FDFBF7] flex items-center justify-center">
@@ -166,44 +168,104 @@ export default function ProductClientView({ product }: { product: any }) {
         );
     }
 
+    // Calculate Discount Percentage
+    const discount = product.originalPrice ? Math.round(((product.originalPrice - displayPrice) / product.originalPrice) * 100) : 0;
+
     return (
-        <main className="bg-[#FDFBF7] min-h-screen pb-12 font-sans">
-            <Navbar />
+        <main className="bg-white md:bg-[#FDFBF7] min-h-screen pb-24 md:pb-12 font-sans text-[#2D2D2D]">
+            {/* Desktop Navbar */}
+            <div className="hidden md:block">
+                <Navbar />
+            </div>
+
+            {/* Mobile Custom Header */}
+            <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-transparent p-4 flex justify-between items-center bg-gradient-to-b from-black/10 to-transparent pointer-events-none">
+                <button onClick={() => router.back()} className="w-10 h-10 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center shadow-sm text-[#2D2D2D] pointer-events-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                    </svg>
+                </button>
+
+                {/* Optional Breadcrumb Text in Center? Or just keep it clean */}
+                <span className="text-sm font-medium text-[#2D2D2D] bg-white/80 backdrop-blur-md px-3 py-1 rounded-full pointer-events-auto shadow-sm">
+                    {product.category || 'Product'}
+                </span>
+
+                <button onClick={() => setIsWishlisted(!isWishlisted)} className="w-10 h-10 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center shadow-sm text-[#2D2D2D] pointer-events-auto">
+                    {isWishlisted ? <FaHeart className="text-red-500" /> : <FaRegHeart />}
+                </button>
+            </div>
 
             {/* Main Content Centered */}
-            <div className="pt-24 md:pt-32 max-w-7xl mx-auto px-4 lg:px-6 flex items-center justify-center min-h-[80vh]">
+            <div className="pt-0 md:pt-32 max-w-7xl mx-auto md:px-6 flex items-center justify-center min-h-[80vh]">
 
                 {/* The "Card" Container */}
-                <div className="bg-white rounded-[2.5rem] shadow-2xl shadow-[#C08C6C]/10 w-full overflow-hidden grid grid-cols-1 md:grid-cols-2 relative border border-[#E5E0D8]">
+                <div className="bg-white md:rounded-[2.5rem] md:shadow-2xl md:shadow-[#C08C6C]/10 w-full overflow-hidden grid grid-cols-1 md:grid-cols-2 relative md:border md:border-[#E5E0D8]">
 
                     {/* Left: Image Gallery Section */}
-                    <div className="p-4 md:p-8 bg-white">
-                        <ProductImageGallery
-                            images={galleryImages}
-                            activeImage={activeImage}
-                            onImageSelect={setActiveImage}
-                            title={product.title}
-                        />
+                    <div className="bg-white relative">
+                        {/* Mobile: Full Bleed Image */}
+                        <div className="md:hidden h-[500px] w-full relative bg-[#F0F0F0]">
+                            <img
+                                src={activeImage}
+                                alt={product.title}
+                                className="w-full h-full object-cover"
+                            />
+                            {/* Pagination Dots Overlay */}
+                            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
+                                {galleryImages.map((_, idx) => (
+                                    <div key={idx} className={`w-1.5 h-1.5 rounded-full ${activeImage === galleryImages[idx] ? 'bg-white' : 'bg-white/50'}`}></div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Desktop: Existing Gallery */}
+                        <div className="hidden md:block p-8">
+                            <ProductImageGallery
+                                images={galleryImages}
+                                activeImage={activeImage}
+                                onImageSelect={setActiveImage}
+                                title={product.title}
+                            />
+                        </div>
                     </div>
 
                     {/* Right: Details Section */}
-                    <div className="p-8 md:p-12 flex flex-col h-full bg-white">
+                    <div className="p-6 md:p-12 flex flex-col h-full bg-white -mt-6 rounded-t-[2rem] md:mt-0 md:rounded-none z-10 relative shadow-[0_-10px_40px_rgba(0,0,0,0.05)] md:shadow-none">
                         <div className="mb-auto">
-                            <div className="flex justify-between items-start">
-                                <div>
-                                    <h1 className="font-serif text-3xl md:text-5xl text-[#2D2D2D] mb-3 leading-[1.1] font-medium">
-                                        {product.title}
-                                    </h1>
-                                    <div className="flex items-center gap-3 mb-6">
-                                        <span className="text-2xl md:text-3xl font-bold text-[#2D2D2D]">₹{displayPrice?.toLocaleString('en-IN')}</span>
-                                        <div className="flex items-center gap-1 text-[#C08C6C] text-sm md:text-base border-l border-[#E5E0D8] pl-3 ml-1">
-                                            <FaStar />
-                                            <span className="font-medium text-[#5D5D5D] ml-1">{product.rating || 4.5}</span>
-                                            <span className="text-[#8D8D8D] font-normal ml-1">({product.numReviews || 0} reviews)</span>
-                                        </div>
+
+                            {/* Title & Reviews */}
+                            <div className="mb-4">
+                                <h1 className="font-serif text-2xl md:text-5xl text-[#2D2D2D] mb-2 leading-tight font-medium">
+                                    {product.title}
+                                </h1>
+                                <div className="flex items-center gap-2 mb-4">
+                                    <div className="flex text-[#C08C6C] text-xs">
+                                        {[...Array(5)].map((_, i) => (
+                                            <FaStar key={i} className={i < (product.rating || 4) ? "text-[#C08C6C]" : "text-[#E5E0D8]"} />
+                                        ))}
                                     </div>
+                                    <span className="text-xs font-bold text-[#2D2D2D]">{product.rating || 4.5}</span>
+                                    <span className="text-xs text-[#8D8D8D]">| {product.numReviews || 120} reviews</span>
                                 </div>
                             </div>
+
+                            {/* Price Row */}
+                            <div className="flex items-baseline gap-3 mb-6">
+                                <span className="text-2xl md:text-3xl font-bold text-[#2D2D2D]">₹{displayPrice?.toLocaleString('en-IN')}</span>
+                                {product.originalPrice && product.originalPrice > displayPrice && (
+                                    <>
+                                        <span className="text-lg text-[#8D8D8D] line-through decoration-1">₹{product.originalPrice.toLocaleString('en-IN')}</span>
+                                        <span className="bg-[#ae856b] text-white text-xs font-bold px-2 py-1 rounded-md">
+                                            {Math.round(((product.originalPrice - displayPrice) / product.originalPrice) * 100)}% OFF
+                                        </span>
+                                    </>
+                                )}
+                                <span className="text-xs text-[#8D8D8D] ml-auto block md:hidden">inclusive of all taxes</span>
+                            </div>
+
+                            {/* Divider on Mobile */}
+                            <hr className="border-[#F0F0E0] mb-6 md:hidden" />
 
                             {/* Stock Status */}
                             {displayStock < 10 && displayStock > 0 && (
