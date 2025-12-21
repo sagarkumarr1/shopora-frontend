@@ -3,21 +3,36 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { FaStar } from 'react-icons/fa';
+import productService from '@/services/productService';
 
 export default function FilterSidebar() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
     const [priceRange, setPriceRange] = useState<number>(100000);
-    const [categories, setCategories] = useState<string[]>([]);
+    const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [minRating, setMinRating] = useState<number>(0);
+    const [availableCategories, setAvailableCategories] = useState<any[]>([]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const res = await productService.getCategories();
+                // Handle both array of strings or objects
+                setAvailableCategories(res.data || res || []);
+            } catch (error) {
+                console.error("Failed to fetch categories", error);
+            }
+        };
+        fetchCategories();
+    }, []);
 
     useEffect(() => {
         const price = searchParams.get('maxPrice');
         if (price) setPriceRange(Number(price));
 
         const cats = searchParams.get('category');
-        if (cats) setCategories(cats.split(','));
+        if (cats) setSelectedCategories(cats.split(','));
 
         const rating = searchParams.get('rating');
         if (rating) setMinRating(Number(rating));
@@ -39,11 +54,11 @@ export default function FilterSidebar() {
     };
 
     const handleCategoryChange = (category: string) => {
-        const updatedCategories = categories.includes(category)
-            ? categories.filter(c => c !== category)
-            : [...categories, category];
+        const updatedCategories = selectedCategories.includes(category)
+            ? selectedCategories.filter(c => c !== category)
+            : [...selectedCategories, category];
 
-        setCategories(updatedCategories);
+        setSelectedCategories(updatedCategories);
         updateFilters({ category: updatedCategories.join(',') });
     };
 
@@ -75,18 +90,24 @@ export default function FilterSidebar() {
             {/* Categories */}
             <div className="mb-6">
                 <h4 className="font-semibold text-sm mb-2 text-gray-700">Categories</h4>
-                <div className="space-y-2">
-                    {['Mobiles', 'Laptops', 'Headphones', 'Cameras', 'Accessories'].map((cat) => (
-                        <label key={cat} className="flex items-center space-x-2 cursor-pointer">
-                            <input
-                                type="checkbox"
-                                checked={categories.includes(cat)}
-                                onChange={() => handleCategoryChange(cat)}
-                                className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                            />
-                            <span className="text-sm text-gray-600">{cat}</span>
-                        </label>
-                    ))}
+                <div className="space-y-2 max-h-60 overflow-y-auto">
+                    {availableCategories.length > 0 ? availableCategories.map((cat: any) => {
+                        const catName = typeof cat === 'string' ? cat : cat.name;
+                        const catId = typeof cat === 'string' ? cat : (cat.slug || cat.name); // search usually by slug/name
+                        return (
+                            <label key={catId} className="flex items-center space-x-2 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={selectedCategories.includes(catName)}
+                                    onChange={() => handleCategoryChange(catName)}
+                                    className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                />
+                                <span className="text-sm text-gray-600 capitalize">{catName}</span>
+                            </label>
+                        );
+                    }) : (
+                        <p className="text-xs text-gray-400">Loading categories...</p>
+                    )}
                 </div>
             </div>
 
@@ -117,7 +138,7 @@ export default function FilterSidebar() {
             <button
                 onClick={() => {
                     setPriceRange(100000);
-                    setCategories([]);
+                    setSelectedCategories([]);
                     setMinRating(0);
                     router.push('/search');
                 }}

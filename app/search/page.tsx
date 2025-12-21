@@ -6,18 +6,26 @@ import Navbar from '@/components/Navbar';
 import FilterSidebar from '@/components/FilterSidebar';
 import ProductCard from '@/components/ProductCard';
 import { IoIosArrowDown, IoMdSearch, IoMdClose } from "react-icons/io";
-import { FaArrowLeft, FaFilter, FaSortAmountDown } from 'react-icons/fa';
+import { FaArrowLeft, FaFilter, FaShoppingCart } from 'react-icons/fa';
 import productService from '@/services/productService';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
 
 function SearchContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const initialQuery = searchParams.get('q') || '';
+    const categoryParam = searchParams.get('category');
+    const { cartItems } = useSelector((state: RootState) => state.cart);
 
     const [products, setProducts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [sortBy, setSortBy] = useState('relevance');
     const [searchQuery, setSearchQuery] = useState(initialQuery);
+
+    // Determines if this is a Category View or Search View
+    const isCategoryView = !!categoryParam && !initialQuery;
+    const pageTitle = categoryParam || "Search Results";
 
     // Update query state if URL changes
     useEffect(() => {
@@ -33,7 +41,6 @@ function SearchContent() {
 
     const clearSearch = () => {
         setSearchQuery('');
-        // router.push('/search'); // Optional: redirect to empty search or just clear input
     };
 
     // Fetch Products
@@ -65,31 +72,81 @@ function SearchContent() {
     return (
         <>
             {/* Mobile Fixed Header & Controls */}
-            <div className="md:hidden fixed top-0 left-0 right-0 bg-white z-50 shadow-sm rounded-b-[2rem]">
-                {/* Row 1: Back + Search Input */}
-                <div className="flex items-center gap-3 p-4 pb-2">
-                    <button onClick={() => router.back()} className="text-[#5D5D5D] p-1">
-                        <FaArrowLeft className="text-lg" />
-                    </button>
-                    <form onSubmit={handleSearchSubmit} className="flex-1 relative">
-                        <IoMdSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8D8D8D] text-lg" />
-                        <input
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-[#F9F9F5] rounded-full py-3 pl-12 pr-10 text-[#2D2D2D] text-sm font-medium border border-[#E5E0E0] outline-none focus:border-[#C08C6C]"
-                            placeholder="Search..."
-                        />
-                        {searchQuery && (
-                            <button type="button" onClick={clearSearch} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8D8D8D] p-1">
-                                <IoMdClose />
-                            </button>
-                        )}
-                    </form>
-                </div>
+            <div className={`md:hidden fixed top-0 left-0 right-0 bg-white z-50 shadow-sm ${isCategoryView ? '' : 'rounded-b-[2rem]'}`}>
 
-                {/* Row 2: Results Count & Filter/Sort */}
+                {/* Row 1: Header (Search vs Category) */}
+                {isCategoryView ? (
+                    // CATEGORY HEADER
+                    <div className="flex items-center justify-between p-4 pb-2">
+                        <button onClick={() => router.back()} className="text-[#5D5D5D] p-1">
+                            <FaArrowLeft className="text-lg" />
+                        </button>
+                        <h1 className="text-lg font-bold text-[#2D2D2D] capitalize">{pageTitle}</h1>
+                        <button onClick={() => router.push('/cart')} className="relative text-[#5D5D5D] p-1">
+                            <FaShoppingCart className="text-xl" />
+                            {cartItems.length > 0 && (
+                                <span className="absolute -top-1 -right-1 bg-[#C08C6C] text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-white">
+                                    {cartItems.reduce((acc, item) => acc + item.quantity, 0)}
+                                </span>
+                            )}
+                        </button>
+                    </div>
+                ) : (
+                    // SEARCH HEADER
+                    <div className="flex items-center gap-3 p-4 pb-2">
+                        <button onClick={() => router.back()} className="text-[#5D5D5D] p-1">
+                            <FaArrowLeft className="text-lg" />
+                        </button>
+                        <form onSubmit={handleSearchSubmit} className="flex-1 relative">
+                            <IoMdSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8D8D8D] text-lg" />
+                            <input
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full bg-[#F9F9F5] rounded-full py-3 pl-12 pr-10 text-[#2D2D2D] text-sm font-medium border border-[#E5E0E0] outline-none focus:border-[#C08C6C]"
+                                placeholder="Search..."
+                            />
+                            {searchQuery && (
+                                <button type="button" onClick={clearSearch} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8D8D8D] p-1">
+                                    <IoMdClose />
+                                </button>
+                            )}
+                        </form>
+                    </div>
+                )}
+
+                {/* Category Breadcrumbs & Title & Pills */}
+                {isCategoryView && (
+                    <div className="px-4 pb-2">
+                        {/* Breadcrumb */}
+                        <div className="flex items-center gap-2 text-xs text-[#8D8D8D] mb-4">
+                            <span>Home</span>
+                            <span>/</span>
+                            <span className="capitalize text-[#2D2D2D] font-medium">{categoryParam}</span>
+                        </div>
+
+                        {/* Big Title & Count */}
+                        <div className="mb-4">
+                            <h2 className="font-serif text-3xl text-[#8B5E3C] capitalize mb-1">{categoryParam}</h2>
+                            <p className="text-xs text-[#8D8D8D] font-medium">{products.length} results</p>
+                        </div>
+
+                        {/* Pills (Mock Categories for Visuals - as per design, keeping them static for now but they act as sub-filters if implemented) */}
+                        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide mb-2">
+                            {['All', 'Jackets', 'T-Shirts', 'Shirts', 'Trousers', 'Shoes'].map((sub, idx) => (
+                                <button
+                                    key={sub}
+                                    className={`px-5 py-2 rounded-xl text-xs font-bold whitespace-nowrap border transition-all ${idx === 0 ? 'bg-[#ae856b] text-white border-[#ae856b]' : 'bg-[#F9F9F5] text-[#5D5D5D] border-[#E5E0D8]'}`}
+                                >
+                                    {sub}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Row 2: Filter/Sort Controls */}
                 <div className="px-4 pb-4">
-                    <p className="text-xs text-[#8D8D8D] mb-3 ml-1">{products.length} Results found for '{searchParams.get('q')}'</p>
+                    {!isCategoryView && <p className="text-xs text-[#8D8D8D] mb-3 ml-1">{products.length} Results found for '{searchParams.get('q')}'</p>}
 
                     <div className="flex gap-3">
                         {/* Filter Button */}
@@ -122,7 +179,7 @@ function SearchContent() {
             </div>
 
             {/* Content Wrapper */}
-            <div className="max-w-[1600px] mx-auto p-4 md:p-6 pt-[160px] md:pt-32 flex flex-col lg:flex-row gap-8">
+            <div className={`max-w-[1600px] mx-auto p-4 md:p-6 flex flex-col lg:flex-row gap-8 ${isCategoryView ? 'pt-[320px]' : 'pt-[160px]'} md:pt-32`}>
 
                 {/* Sidebar (Desktop) */}
                 <div className="hidden lg:block w-72 flex-shrink-0">
@@ -133,7 +190,10 @@ function SearchContent() {
                 <div className="flex-1">
                     {/* Desktop Header & Sort (Hidden on Mobile) */}
                     <div className="hidden md:flex bg-white p-6 shadow-xl shadow-[#C08C6C]/5 border border-[#E5E0D8] rounded-[2rem] mb-8 justify-between items-center gap-4">
-                        <span className="font-serif text-[#2D2D2D] text-lg">Showing <span className="font-bold text-[#C08C6C]">{products.length}</span> results</span>
+                        <span className="font-serif text-[#2D2D2D] text-lg">
+                            {isCategoryView ? `Browsing ${categoryParam}` : `Showing results for search`}
+                            <span className="font-bold text-[#C08C6C] ml-2">({products.length})</span>
+                        </span>
 
                         <div className="flex items-center gap-3">
                             <span className="text-[#8D8D8D] text-sm font-medium uppercase tracking-wider">Sort By</span>

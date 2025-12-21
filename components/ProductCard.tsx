@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import { addItem } from '@/store/cartSlice';
 import { FaHeart, FaStar, FaShoppingCart } from 'react-icons/fa';
 import { toast } from 'react-toastify';
+import { AppDispatch } from '@/store/store';
 
 // Helper to parse price safely
 const formatPrice = (price: number | undefined) => {
@@ -26,7 +27,7 @@ interface ProductProps {
 }
 
 export default function ProductCard({ product }: { product: ProductProps }) {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
     // Fallback for id, prioritizes slug for SEO
     const productId = product.slug || product._id || product.id;
 
