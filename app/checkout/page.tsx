@@ -35,6 +35,9 @@ export default function Checkout() {
         state: ''
     });
 
+    const [pincodeLoading, setPincodeLoading] = useState(false);
+    const [postOffices, setPostOffices] = useState<string[]>([]);
+
     useEffect(() => {
         if (checkoutItems.length === 0) {
             router.push('/');
@@ -48,6 +51,47 @@ export default function Checkout() {
             setSelectedAddressId(defaultAddr._id);
         }
     }, [addresses, selectedAddressId]);
+
+    // Pincode Auto-fill Logic
+    useEffect(() => {
+        if (formData.pincode.length === 6) {
+            const fetchPincodeDetails = async () => {
+                setPincodeLoading(true);
+                try {
+                    const response = await fetch(`https://api.postalpincode.in/pincode/${formData.pincode}`);
+                    const data = await response.json();
+
+                    if (data && data[0].Status === "Success") {
+                        const details = data[0].PostOffice;
+                        const city = details[0].District;
+                        const state = details[0].State;
+                        const offices = details.map((po: any) => po.Name);
+
+                        setPostOffices(offices);
+                        setFormData(prev => ({
+                            ...prev,
+                            city: city,
+                            state: state,
+                            locality: offices.length === 1 ? offices[0] : '' // Auto-select if only one
+                        }));
+                        toast.success("City and State auto-filled!");
+                    } else {
+                        toast.error("Invalid Pincode");
+                        setPostOffices([]);
+                    }
+                } catch (error) {
+                    console.error("Error fetching pincode:", error);
+                    toast.error("Failed to fetch pincode details");
+                } finally {
+                    setPincodeLoading(false);
+                }
+            };
+
+            fetchPincodeDetails();
+        } else {
+            setPostOffices([]);
+        }
+    }, [formData.pincode]);
 
     const totalItems = checkoutItems.reduce((acc, item) => acc + item.quantity, 0);
     const totalPrice = checkoutItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
@@ -197,8 +241,28 @@ export default function Checkout() {
                                                     <input required placeholder="Mobile Number" value={formData.mobile} onChange={e => setFormData({ ...formData, mobile: e.target.value })} className="w-full p-3 rounded-lg border border-[#E5E0D8] focus:border-[#C08C6C] outline-none bg-white text-[#2D2D2D]" />
                                                 </div>
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    <input required placeholder="Pincode" value={formData.pincode} onChange={e => setFormData({ ...formData, pincode: e.target.value })} className="w-full p-3 rounded-lg border border-[#E5E0D8] focus:border-[#C08C6C] outline-none bg-white text-[#2D2D2D]" />
-                                                    <input required placeholder="Locality" value={formData.locality} onChange={e => setFormData({ ...formData, locality: e.target.value })} className="w-full p-3 rounded-lg border border-[#E5E0D8] focus:border-[#C08C6C] outline-none bg-white text-[#2D2D2D]" />
+                                                    <div className="relative">
+                                                        <input required placeholder="Pincode" value={formData.pincode} onChange={e => setFormData({ ...formData, pincode: e.target.value.replace(/\D/g, '').slice(0, 6) })} className="w-full p-3 rounded-lg border border-[#E5E0D8] focus:border-[#C08C6C] outline-none bg-white text-[#2D2D2D]" />
+                                                        {pincodeLoading && (
+                                                            <div className="absolute right-3 top-3 animate-spin rounded-full h-5 w-5 border-b-2 border-[#C08C6C]"></div>
+                                                        )}
+                                                    </div>
+
+                                                    {postOffices.length > 0 ? (
+                                                        <select
+                                                            required
+                                                            value={formData.locality}
+                                                            onChange={e => setFormData({ ...formData, locality: e.target.value })}
+                                                            className="w-full p-3 rounded-lg border border-[#E5E0D8] focus:border-[#C08C6C] outline-none bg-white text-[#2D2D2D]"
+                                                        >
+                                                            <option value="">Select Locality / Post Office</option>
+                                                            {postOffices.map((po, idx) => (
+                                                                <option key={idx} value={po}>{po}</option>
+                                                            ))}
+                                                        </select>
+                                                    ) : (
+                                                        <input required placeholder="Locality" value={formData.locality} onChange={e => setFormData({ ...formData, locality: e.target.value })} className="w-full p-3 rounded-lg border border-[#E5E0D8] focus:border-[#C08C6C] outline-none bg-white text-[#2D2D2D]" />
+                                                    )}
                                                 </div>
                                                 <textarea required placeholder="Address (Area and Street)" value={formData.address} onChange={e => setFormData({ ...formData, address: e.target.value })} className="w-full p-3 rounded-lg border border-[#E5E0D8] focus:border-[#C08C6C] outline-none bg-white h-24 text-[#2D2D2D]"></textarea>
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
