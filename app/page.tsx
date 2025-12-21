@@ -53,62 +53,95 @@ export default function Home() {
       <Navbar />
       <div className="pt-20 md:pt-24 max-w-[1800px] mx-auto">
 
-        {/* Categories - Mobile: Horizontal list, Desktop: Clean bar */}
-        {/* Categories - Mobile: Story Style, Desktop: Bar */}
-        <div className="mb-6 md:mb-10">
-          <div className="md:hidden flex gap-4 overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4">
-            {/* Story Items */}
-            {[
-              { name: 'Fashion', img: 'https://images.unsplash.com/photo-1445205170230-05328324f311?w=150&q=80' },
-              { name: 'Electronics', img: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150&q=80' },
-              { name: 'Beauty', img: 'https://images.unsplash.com/photo-1596462502278-27bfdd403348?w=150&q=80' },
-              { name: 'Home', img: 'https://images.unsplash.com/photo-1513161455079-7dc1de15ef3e?w=150&q=80' },
-              { name: 'Mobile', img: 'https://images.unsplash.com/photo-1546054454-aa26e2b734c7?w=150&q=80' },
-              { name: 'All', img: '/icon.png' }, // Using logo for "All"
-            ].map((cat, i) => (
-              <div key={i} className="flex flex-col items-center gap-2 flex-shrink-0 cursor-pointer" onClick={() => window.location.href = `/search?category=${cat.name}`}>
-                <div className="w-16 h-16 rounded-full p-[2px] bg-gradient-to-tr from-[#C08C6C] to-[#E5E0D8]">
-                  <div className="w-full h-full rounded-full border-2 border-white overflow-hidden relative">
-                    <Image src={cat.img} alt={cat.name} fill className="object-cover" />
-                  </div>
-                </div>
-                <span className="text-xs font-medium text-[#2D2D2D]">{cat.name}</span>
+        {/* Mobile: Categories & Hero Redesign */}
+        <div className="md:hidden space-y-8 mb-8">
+          {/* Search handled in Navbar, so spacing already provided by padding-top */}
+
+          {/* 1. Mobile Hero Card */}
+          <div className="relative w-full h-[220px] bg-[#EBE3D9] rounded-[2rem] overflow-hidden flex items-center px-6">
+            <div className="z-10 flex flex-col items-start gap-1">
+              <h3 className="text-[#5A4A42] font-medium text-lg tracking-wide">New Collection</h3>
+              <h2 className="text-[#5A4A42] font-serif text-3xl mb-3">Up to <span className="font-bold">40% OFF</span></h2>
+              <button className="bg-[#C08C6C] text-white px-6 py-2 rounded-full text-sm font-medium shadow-lg hover:bg-[#A87555] transition-colors">
+                Shop Now
+              </button>
+              {/* Pagination Dots */}
+              <div className="flex gap-1.5 mt-6 ml-1">
+                <div className="w-2 h-2 rounded-full bg-white"></div>
+                <div className="w-2 h-2 rounded-full bg-white/40"></div>
+                <div className="w-2 h-2 rounded-full bg-white/40"></div>
               </div>
-            ))}
+            </div>
+            {/* Hero Image (Right Side) */}
+            <div className="absolute right-0 bottom-0 top-0 w-1/2">
+              <Image
+                src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&q=80"
+                alt="Fashion Model"
+                fill
+                className="object-cover object-top mask-image-gradient"
+              />
+            </div>
           </div>
-          <div className="hidden md:block">
-            <CategoryBar />
+
+          {/* 2. Categories */}
+          <div>
+            <div className="flex justify-between items-center mb-4 px-1">
+              <h3 className="font-serif text-[1.35rem] text-[#2D2D2D] font-medium">Categories</h3>
+              <Link href="/search" className="text-[#C08C6C] text-sm font-medium flex items-center gap-1">
+                View all <IoIosArrowDown className="-rotate-90 text-xs" />
+              </Link>
+            </div>
+
+            <div className="flex gap-5 overflow-x-auto pb-4 scrollbar-hide px-1">
+              {[
+                { name: 'Men', icon: '/icons/tshirt.png', fallback: 'https://cdn-icons-png.flaticon.com/128/2589/2589903.png' },
+                { name: 'Women', icon: '/icons/dress.png', fallback: 'https://cdn-icons-png.flaticon.com/128/4430/4430580.png' },
+                { name: 'Shoes', icon: '/icons/shoe.png', fallback: 'https://cdn-icons-png.flaticon.com/128/2742/2742674.png' },
+                { name: 'Bags', icon: '/icons/bag.png', fallback: 'https://cdn-icons-png.flaticon.com/128/2965/2965567.png' },
+                { name: 'Watch', icon: '/icons/watch.png', fallback: 'https://cdn-icons-png.flaticon.com/128/878/878597.png' },
+              ].map((cat, i) => (
+                <div key={i} className="flex flex-col items-center gap-2 flex-shrink-0 cursor-pointer group" onClick={() => window.location.href = `/search?category=${cat.name}`}>
+                  <div className="w-[72px] h-[72px] rounded-full bg-[#F5F1EB] flex items-center justify-center shadow-sm border border-[#EBE3D9] group-hover:bg-[#EBE3D9] transition-colors">
+                    <img src={cat.fallback} alt={cat.name} className="w-8 h-8 opacity-70 group-hover:opacity-100 transition-opacity sepia-[0.3]" />
+                  </div>
+                  <span className="text-xs font-medium text-[#5D5D5D] tracking-wide">{cat.name}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Hero Section - Magazine Style */}
-        <section className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 mb-12 h-auto md:h-[600px]">
-          {/* Main Hero Slider */}
-          <div className="md:col-span-8 h-[50vh] md:h-full rounded-[2.5rem] overflow-hidden shadow-2xl shadow-[#C08C6C]/10 relative group border border-[#E5E0D8]">
-            <HeroSlider />
-          </div>
-          {/* Side Editorial Banners - Desktop Only */}
-          <div className="hidden md:flex md:col-span-4 flex-col gap-4 md:gap-6 h-full">
-            <div className="relative flex-1 rounded-[2.5rem] overflow-hidden shadow-xl shadow-[#C08C6C]/5 group cursor-pointer border border-[#E5E0D8]">
-              <Image src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80" fill className="object-cover group-hover:scale-105 transition-transform duration-700" alt="New Arrivals" />
-              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors p-8 flex items-end">
-                <div>
-                  <span className="text-white/80 text-xs uppercase tracking-widest font-bold mb-2 block">New Season</span>
-                  <h3 className="text-white text-3xl font-serif">Urban Collection</h3>
+        {/* Desktop Hero & Categories (Keep existing but hidden on mobile) */}
+        <div className="hidden md:block mb-10">
+          <CategoryBar />
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-12 gap-6 h-[600px]">
+            {/* Main Hero Slider */}
+            <div className="md:col-span-8 h-full rounded-[2.5rem] overflow-hidden shadow-2xl shadow-[#C08C6C]/10 relative group border border-[#E5E0D8]">
+              <HeroSlider />
+            </div>
+            {/* Side Editorial Banners */}
+            <div className="flex md:col-span-4 flex-col gap-6 h-full">
+              <div className="relative flex-1 rounded-[2.5rem] overflow-hidden shadow-xl shadow-[#C08C6C]/5 group cursor-pointer border border-[#E5E0D8]">
+                <Image src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80" fill className="object-cover group-hover:scale-105 transition-transform duration-700" alt="New Arrivals" />
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors p-8 flex items-end">
+                  <div>
+                    <span className="text-white/80 text-xs uppercase tracking-widest font-bold mb-2 block">New Season</span>
+                    <h3 className="text-white text-3xl font-serif">Urban Collection</h3>
+                  </div>
+                </div>
+              </div>
+              <div className="relative flex-1 rounded-[2.5rem] overflow-hidden shadow-xl shadow-[#C08C6C]/5 group cursor-pointer border border-[#E5E0D8]">
+                <Image src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80" fill className="object-cover group-hover:scale-105 transition-transform duration-700" alt="Audio" />
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors p-8 flex items-end">
+                  <div>
+                    <span className="text-white/80 text-xs uppercase tracking-widest font-bold mb-2 block">Audio</span>
+                    <h3 className="text-white text-3xl font-serif">Premium Sound</h3>
+                  </div>
                 </div>
               </div>
             </div>
-            <div className="relative flex-1 rounded-[2.5rem] overflow-hidden shadow-xl shadow-[#C08C6C]/5 group cursor-pointer border border-[#E5E0D8]">
-              <Image src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80" fill className="object-cover group-hover:scale-105 transition-transform duration-700" alt="Audio" />
-              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors p-8 flex items-end">
-                <div>
-                  <span className="text-white/80 text-xs uppercase tracking-widest font-bold mb-2 block">Audio</span>
-                  <h3 className="text-white text-3xl font-serif">Premium Sound</h3>
-                </div>
-              </div>
-            </div>
           </div>
-        </section>
+        </div>
 
         {/* Curated Collections (Best Deals) */}
         <section className="mb-16">
