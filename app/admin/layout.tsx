@@ -54,7 +54,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {/* Sidebar */}
             <aside className={`fixed inset-y-0 left-0 bg-white w-64 shadow-lg transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 transition-transform duration-200 ease-in-out z-10 md:static md:flex flex-col border-r border-[#E5E0D8]`}>
                 <div className="h-16 flex items-center justify-center border-b border-[#E5E0D8] font-bold text-2xl text-[#C08C6C] font-serif">
-                    Shopora<span className="text-xs text-[#8D8D8D] ml-1 font-sans tracking-wide">Admin</span>
+                    ApniShop<span className="text-xs text-[#8D8D8D] ml-1 font-sans tracking-wide">Admin</span>
                 </div>
 
                 <div className="p-4">

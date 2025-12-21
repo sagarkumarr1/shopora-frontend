@@ -19,7 +19,7 @@ export default function AboutPage() {
                 <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-xl shadow-[#C08C6C]/5 border border-[#E5E0D8]">
                     <div className="prose prose-stone max-w-none">
                         <p className="text-lg leading-relaxed text-[#5D5D5D] mb-8">
-                            Welcome to <strong>Shopora</strong>, where premium quality meets effortless shopping. Founded with a simple mission — to make luxury accessible — we curate collections that inspire and elevate your everyday life.
+                            Welcome to <strong>ApniShop</strong>, where premium quality meets effortless shopping. Founded with a simple mission — to make luxury accessible — we curate collections that inspire and elevate your everyday life.
                         </p>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 my-12">
@@ -39,7 +39,7 @@ export default function AboutPage() {
 
                         <h2 className="font-serif text-3xl mb-6">Our Promise</h2>
                         <p className="text-[#5D5D5D] leading-relaxed mb-6">
-                            When you shop with Shopora, you're not just buying a product; you're joining a community that values authenticity, style, and trust. We verify every seller, inspect every shipment, and guarantee your happiness.
+                            When you shop with ApniShop, you're not just buying a product; you're joining a community that values authenticity, style, and trust. We verify every seller, inspect every shipment, and guarantee your happiness.
                         </p>
                         <p className="text-[#5D5D5D] leading-relaxed">
                             Thank you for letting us be a part of your journey.
@@ -47,7 +47,7 @@ export default function AboutPage() {
 
                         <div className="mt-12 flex items-center justify-center">
                             <div className="text-center">
-                                <p className="font-serif text-2xl italic text-[#C08C6C] mb-2">The Shopora Team</p>
+                                <p className="font-serif text-2xl italic text-[#C08C6C] mb-2">The ApniShop Team</p>
                                 <span className="text-xs font-bold uppercase tracking-widest text-[#8D8D8D]">Est. 2024</span>
                             </div>
                         </div>

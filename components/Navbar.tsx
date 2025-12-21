@@ -113,12 +113,16 @@ export default function Navbar() {
                 <div className="flex justify-between items-center h-14 md:h-20 gap-4 md:gap-8">
 
                     {/* Logo */}
-                    <div className="flex-shrink-0 flex items-center gap-1 cursor-pointer group" onClick={() => navigate.push('/')}>
-                        <div className="bg-stone-900 p-2 rounded-xl group-hover:bg-violet-600 transition-colors duration-300">
-                            <FaStore className="text-white text-lg md:text-xl" />
+                    <div className="flex-shrink-0 flex items-center gap-2 cursor-pointer group" onClick={() => navigate.push('/')}>
+                        <div className="bg-transparent p-0 rounded-xl transition-transform duration-300 hover:scale-105">
+                            <img
+                                src="https://drive.google.com/uc?export=view&id=1RZwEAmqkq0ZIBrGN3iN64gEP5oFSGZHG"
+                                alt="ApniShop Logo"
+                                className="h-10 w-auto md:h-12 object-contain"
+                            />
                         </div>
                         <span className="text-xl md:text-2xl font-bold text-stone-900 tracking-tight font-outfit group-hover:text-violet-700 transition-colors">
-                            shopora.
+                            ApniShop
                         </span>
                     </div>
 

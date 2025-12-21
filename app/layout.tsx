@@ -10,19 +10,19 @@ const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfa
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://shopora-frontend.vercel.app'),
   title: {
-    default: 'Shopora | Premium Shopping Experience',
-    template: '%s | Shopora',
+    default: 'ApniShop | Sab Kuch, Ek Jagah',
+    template: '%s | ApniShop',
   },
-  description: 'Shopora is your one-stop destination for premium products. Shop electronics, fashion, home essentials, and more with fast delivery and secure payments.',
-  keywords: ['shopping', 'ecommerce', 'premium', 'electronics', 'fashion', 'shopora'],
-  authors: [{ name: 'Shopora Team' }],
-  creator: 'Shopora',
+  description: 'ApniShop - Sab Kuch, Ek Jagah. Your one-stop destination for premium products. Shop electronics, fashion, home essentials, and more.',
+  keywords: ['shopping', 'ecommerce', 'premium', 'electronics', 'fashion', 'ApniShop', 'Apni Shop', 'shopora'],
+  authors: [{ name: 'ApniShop Team' }],
+  creator: 'ApniShop',
   openGraph: {
     type: 'website',
     locale: 'en_US',
     url: 'https://shopora.com', // Replace with actual domain
-    siteName: 'Shopora',
-    title: 'Shopora | Premium Shopping Experience',
+    siteName: 'ApniShop',
+    title: 'ApniShop | Sab Kuch, Ek Jagah',
     description: 'The best place to buy everything. Shop premium products with ease.',
     images: [
       {
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Shopora | Premium Shopping Experience',
+    title: 'ApniShop | Sab Kuch, Ek Jagah',
     description: 'The best place to buy everything. Shop premium products with ease.',
     images: ['/og-image.jpg'], // Ensure this image exists in public folder or remove
   },

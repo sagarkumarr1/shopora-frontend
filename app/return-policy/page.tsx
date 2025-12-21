@@ -45,13 +45,13 @@ export default function ReturnPolicyPage() {
                             Once our courier partner picks up your item, the refund is initiated immediately.
                             <br /><br />
                             - <strong>Original Payment Source:</strong> 5-7 business days.<br />
-                            - <strong>Shopora Wallet:</strong> Instant credit.
+                            - <strong>ApniShop Wallet:</strong> Instant credit.
                         </p>
                     </section>
 
                     <div className="bg-[#FDFBF7] p-6 rounded-xl border border-[#E5E0D8] text-center mt-8">
                         <p className="text-sm font-bold text-[#5D5D5D] mb-2">Need help with a return?</p>
-                        <a href="mailto:support@shopora.com" className="text-[#C08C6C] font-bold hover:underline">Contact Support</a>
+                        <a href="mailto:support@apnishop.com" className="text-[#C08C6C] font-bold hover:underline">Contact Support</a>
                     </div>
                 </div>
             </div>
