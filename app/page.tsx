@@ -54,9 +54,31 @@ export default function Home() {
       <div className="pt-20 md:pt-24 max-w-[1800px] mx-auto">
 
         {/* Categories - Mobile: Horizontal list, Desktop: Clean bar */}
-        {/* Categories - Mobile: Horizontal list, Desktop: Clean bar */}
+        {/* Categories - Mobile: Story Style, Desktop: Bar */}
         <div className="mb-6 md:mb-10">
-          <CategoryBar />
+          <div className="md:hidden flex gap-4 overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4">
+            {/* Story Items */}
+            {[
+              { name: 'Fashion', img: 'https://images.unsplash.com/photo-1445205170230-05328324f311?w=150&q=80' },
+              { name: 'Electronics', img: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150&q=80' },
+              { name: 'Beauty', img: 'https://images.unsplash.com/photo-1596462502278-27bfdd403348?w=150&q=80' },
+              { name: 'Home', img: 'https://images.unsplash.com/photo-1513161455079-7dc1de15ef3e?w=150&q=80' },
+              { name: 'Mobile', img: 'https://images.unsplash.com/photo-1546054454-aa26e2b734c7?w=150&q=80' },
+              { name: 'All', img: '/icon.png' }, // Using logo for "All"
+            ].map((cat, i) => (
+              <div key={i} className="flex flex-col items-center gap-2 flex-shrink-0 cursor-pointer" onClick={() => window.location.href = `/search?category=${cat.name}`}>
+                <div className="w-16 h-16 rounded-full p-[2px] bg-gradient-to-tr from-[#C08C6C] to-[#E5E0D8]">
+                  <div className="w-full h-full rounded-full border-2 border-white overflow-hidden relative">
+                    <Image src={cat.img} alt={cat.name} fill className="object-cover" />
+                  </div>
+                </div>
+                <span className="text-xs font-medium text-[#2D2D2D]">{cat.name}</span>
+              </div>
+            ))}
+          </div>
+          <div className="hidden md:block">
+            <CategoryBar />
+          </div>
         </div>
 
         {/* Hero Section - Magazine Style */}

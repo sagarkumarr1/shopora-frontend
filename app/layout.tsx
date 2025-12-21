@@ -53,6 +53,7 @@ export const viewport = {
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import BottomNav from '@/components/BottomNav';
 
 export default function RootLayout({
   children,
@@ -61,9 +62,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${outfit.variable} ${playfair.variable} font-sans bg-[var(--background)] text-[var(--foreground)] antialiased`}>
+      <body className={`${inter.variable} ${outfit.variable} ${playfair.variable} font-sans bg-[var(--background)] text-[var(--foreground)] pb-16 md:pb-0 antialiased`}>
         <Providers>
           {children}
+          <BottomNav />
           <ToastContainer position="bottom-right" theme="light" />
         </Providers>
       </body>
