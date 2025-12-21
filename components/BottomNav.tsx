@@ -11,6 +11,11 @@ export default function BottomNav() {
     const { cartItems } = useSelector((state: RootState) => state.cart);
     const cartCount = cartItems.reduce((acc: number, item: any) => acc + item.quantity, 0);
 
+    // Hide BottomNav on Order Success page
+    if (pathname?.startsWith('/order-success')) {
+        return null;
+    }
+
     const navItems = [
         { name: 'Home', href: '/', icon: FaHome },
         { name: 'Categories', href: '/search', icon: FaThLarge }, // Determine if we want a dedicated cats page or just search

@@ -55,39 +55,39 @@ function OrderSuccessContent() {
     }
 
     return (
-        <div className="flex flex-col items-center w-full max-w-lg mx-auto md:max-w-2xl">
+        <div className="flex flex-col items-center w-full max-w-lg mx-auto md:max-w-2xl md:bg-white md:p-12 md:rounded-[2.5rem] md:shadow-2xl md:shadow-[#C08C6C]/10 md:border md:border-[#E5E0D8] transition-all duration-300">
             {/* Illustration */}
-            <div className="relative w-64 h-64 mb-6 animate-fade-in-up">
+            <div className="relative w-64 h-64 md:w-80 md:h-80 mb-6 animate-fade-in-up">
                 {/* Fallback to checkmark if image missing, but try to use image */}
                 <div className="absolute inset-0 flex items-center justify-center">
                     <Image
                         src="/order_success_box_3d.png"
                         alt="Order Confirmed"
-                        width={256}
-                        height={256}
+                        width={320}
+                        height={320}
                         className="object-contain drop-shadow-2xl"
                         priority
                     />
                 </div>
             </div>
 
-            <h2 className="font-serif text-3xl md:text-4xl text-[#3E3E3E] mb-3 font-medium text-center tracking-tight">
+            <h2 className="font-serif text-3xl md:text-5xl text-[#3E3E3E] mb-3 font-medium text-center tracking-tight">
                 Order Confirmed!
             </h2>
-            <p className="text-[#9A9A9A] mb-8 text-center text-sm md:text-base font-light px-8">
+            <p className="text-[#9A9A9A] mb-8 text-center text-sm md:text-lg font-light px-8">
                 Your order has been successfully placed
             </p>
 
             <div className="mb-10 text-center space-y-2">
-                <p className="text-[#8D8D8D] text-sm md:text-base">Order number: <span className="font-semibold text-[#5A5A5A]">#{order._id?.slice(-6) || '123456'}</span></p>
+                <p className="text-[#8D8D8D] text-sm md:text-base">Order number: <span className="font-semibold text-[#5A5A5A] uppercase tracking-wider">#{order._id?.slice(-8) || '123456'}</span></p>
                 <p className="text-[#8D8D8D] text-sm md:text-base">Thank you for shopping with us!</p>
             </div>
 
             <div className="flex gap-4 w-full px-4 md:px-0">
-                <Link href={`/account/orders`} className="flex-1 bg-[#F5F0EB] text-[#5A4A42] px-4 py-4 rounded-2xl font-medium text-center hover:bg-[#EDE5DE] transition-colors">
+                <Link href={`/account/orders`} className="flex-1 bg-[#F5F0EB] text-[#5A4A42] px-4 py-4 rounded-2xl font-medium text-center hover:bg-[#EDE5DE] transition-colors md:text-lg">
                     View Order
                 </Link>
-                <Link href="/" className="flex-1 bg-[#C08C6C] text-white px-4 py-4 rounded-2xl font-medium text-center hover:bg-[#A87555] shadow-lg shadow-[#C08C6C]/20 transition-all">
+                <Link href="/" className="flex-1 bg-[#C08C6C] text-white px-4 py-4 rounded-2xl font-medium text-center hover:bg-[#A87555] shadow-lg shadow-[#C08C6C]/20 transition-all md:text-lg">
                     Continue Shopping
                 </Link>
             </div>
