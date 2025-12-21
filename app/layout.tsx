@@ -8,7 +8,7 @@ const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit' });
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://shopora-frontend.vercel.app'),
   title: {
     default: 'Shopora | Premium Shopping Experience',
     template: '%s | Shopora',

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://shopora-backend-39ojti617-sagar-vercels-projects.vercel.app/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://shopora-backend-nine.vercel.app/api';
 
 const axiosInstance = axios.create({
     baseURL: API_URL,
