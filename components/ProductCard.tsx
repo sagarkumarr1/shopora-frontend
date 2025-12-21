@@ -5,6 +5,8 @@ import { addItem } from '@/store/cartSlice';
 import { FaHeart, FaStar, FaShoppingCart } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { AppDispatch } from '@/store/store';
+import Link from 'next/link';
+import Image from 'next/image';
 
 // Helper to parse price safely
 const formatPrice = (price: number | undefined) => {
