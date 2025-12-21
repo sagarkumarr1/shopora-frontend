@@ -12,6 +12,7 @@ import Image from 'next/image';
 import productService from '@/services/productService';
 import Link from 'next/link';
 import Skeleton from './Skeleton';
+import ProductImageGallery from './ProductImageGallery';
 
 // ... (imports remain)
 
