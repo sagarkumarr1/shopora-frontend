@@ -21,6 +21,7 @@ export default function Navbar() {
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [mounted, setMounted] = useState(false);
     const searchRef = useRef<HTMLDivElement>(null);
+    const mobileSearchRef = useRef<HTMLDivElement>(null);
     const [showProfileMenu, setShowProfileMenu] = useState(false);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -86,7 +87,13 @@ export default function Navbar() {
     // Close suggestions when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+            const target = event.target as Node;
+            if (
+                searchRef.current &&
+                !searchRef.current.contains(target) &&
+                mobileSearchRef.current &&
+                !mobileSearchRef.current.contains(target)
+            ) {
                 setShowSuggestions(false);
             }
         };
@@ -222,7 +229,7 @@ export default function Navbar() {
 
                 {/* Mobile Search Bar - Expandable */}
                 {showMobileSearch && (
-                    <div className="md:hidden py-3 px-1 animate-in slide-in-from-top-2 fade-in duration-200 border-t border-[#E5E0D8]">
+                    <div className="md:hidden py-3 px-1 animate-in slide-in-from-top-2 fade-in duration-200 border-t border-[#E5E0D8]" ref={mobileSearchRef}>
                         <form onSubmit={handleSearch} className="relative">
                             <input
                                 type="text"
@@ -241,16 +248,23 @@ export default function Navbar() {
                                 {suggestions.map((item) => (
                                     <Link
                                         key={item._id}
-                                        href={`/product/${item._id}`}
+                                        href={item.type === 'category' ? `/search?category=${encodeURIComponent(item.title)}` : `/product/${item._id}`}
                                         className="block px-4 py-3 hover:bg-[#F9F9F5] flex items-center gap-3 transition-colors border-b border-[#F5F5F0] last:border-none"
                                         onClick={() => {
                                             setShowSuggestions(false);
                                             setShowMobileSearch(false);
                                         }}
                                     >
-                                        <FaSearch className="text-[#8D8D8D] text-xs flex-shrink-0" />
-                                        <span className="text-[#2D2D2D] text-sm font-medium line-clamp-1">{item.title}</span>
-                                        <span className="text-xs text-[#8D8D8D] ml-auto uppercase flex-shrink-0 bg-[#F5F5F0] px-2 py-0.5 rounded">{item.category}</span>
+                                        {item.image ? (
+                                            <img src={item.image} alt={item.title} className="w-10 h-10 object-cover rounded-md" />
+                                        ) : (
+                                            <FaSearch className="text-[#8D8D8D] text-xs flex-shrink-0" />
+                                        )}
+                                        <div>
+                                            <span className="text-[#2D2D2D] text-sm font-medium line-clamp-1 block">{item.title}</span>
+                                            {item.type === 'category' && <span className="text-[10px] text-[#C08C6C] uppercase font-bold tracking-wider">Category</span>}
+                                        </div>
+                                        {item.type !== 'category' && <span className="text-xs text-[#8D8D8D] ml-auto uppercase flex-shrink-0 bg-[#F5F5F0] px-2 py-0.5 rounded">{item.category}</span>}
                                     </Link>
                                 ))}
                             </div>
