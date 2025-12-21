@@ -2,51 +2,47 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FaHome, FaSearch, FaShoppingCart, FaUser } from 'react-icons/fa';
-import { useState, useEffect } from 'react';
+import { FaHome, FaThLarge, FaShoppingCart, FaUser } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 
 export default function BottomNav() {
     const pathname = usePathname();
     const { cartItems } = useSelector((state: RootState) => state.cart);
-    const [mounted, setMounted] = useState(false);
+    const cartCount = cartItems.reduce((acc: number, item: any) => acc + item.quantity, 0);
 
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    // Hide on desktop (md and up) and on checkout page
-    if (pathname === '/checkout') return null;
+    const navItems = [
+        { name: 'Home', href: '/', icon: FaHome },
+        { name: 'Categories', href: '/search', icon: FaThLarge }, // Determine if we want a dedicated cats page or just search
+        { name: 'Cart', href: '/cart', icon: FaShoppingCart, badge: cartCount },
+        { name: 'Account', href: '/account', icon: FaUser },
+    ];
 
     return (
-        <div className="fixed bottom-4 left-4 right-4 bg-white/90 backdrop-blur-lg border border-white/20 shadow-2xl shadow-[#C08C6C]/10 py-3 px-6 flex justify-between items-center z-50 md:hidden rounded-[2rem]">
-            <Link href="/" className={`flex flex-col items-center gap-1 transition-colors ${pathname === '/' ? 'text-[#C08C6C]' : 'text-[#8D8D8D] hover:text-[#2D2D2D]'}`}>
-                <FaHome className="text-xl" />
-                <span className="text-[10px] font-bold tracking-wide uppercase">Home</span>
-            </Link>
-
-            <Link href="/search" className={`flex flex-col items-center gap-1 transition-colors ${pathname === '/search' ? 'text-[#C08C6C]' : 'text-[#8D8D8D] hover:text-[#2D2D2D]'}`}>
-                <FaSearch className="text-xl" />
-                <span className="text-[10px] font-bold tracking-wide uppercase">Search</span>
-            </Link>
-
-            <Link href="/cart" className={`relative flex flex-col items-center gap-1 transition-colors ${pathname === '/cart' ? 'text-[#C08C6C]' : 'text-[#8D8D8D] hover:text-[#2D2D2D]'}`}>
-                <div className="relative">
-                    <FaShoppingCart className="text-xl" />
-                    {mounted && cartItems.length > 0 && (
-                        <span className="absolute -top-2 -right-2 bg-[#C08C6C] text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-white shadow-sm">
-                            {cartItems.length}
-                        </span>
-                    )}
-                </div>
-                <span className="text-[10px] font-medium tracking-wide">Cart</span>
-            </Link>
-
-            <Link href="/account" className={`flex flex-col items-center gap-1 transition-colors ${pathname.startsWith('/account') ? 'text-[#C08C6C]' : 'text-[#8D8D8D] hover:text-[#2D2D2D]'}`}>
-                <FaUser className="text-xl" />
-                <span className="text-[10px] font-bold tracking-wide uppercase">Account</span>
-            </Link>
+        <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-stone-200 z-50 pb-safe-area-inset-bottom">
+            <div className="flex justify-around items-center h-16">
+                {navItems.map((item) => {
+                    const isActive = pathname === item.href;
+                    const Icon = item.icon;
+                    return (
+                        <Link
+                            key={item.name}
+                            href={item.href}
+                            className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${isActive ? 'text-[#C08C6C]' : 'text-[#8D8D8D]'}`}
+                        >
+                            <div className="relative">
+                                <Icon className={`text-xl ${isActive ? 'scale-110' : ''} transition-transform`} />
+                                {item.badge ? (
+                                    <span className="absolute -top-2 -right-2 bg-[#C08C6C] text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-white">
+                                        {item.badge}
+                                    </span>
+                                ) : null}
+                            </div>
+                            <span className="text-[10px] font-bold tracking-wide">{item.name}</span>
+                        </Link>
+                    );
+                })}
+            </div>
         </div>
     );
 }

@@ -51,6 +51,8 @@ export const viewport = {
   initialScale: 1,
 };
 
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import BottomNav from '@/components/BottomNav';
 
 export default function RootLayout({
@@ -64,6 +66,7 @@ export default function RootLayout({
         <Providers>
           {children}
           <BottomNav />
+          <ToastContainer position="bottom-right" theme="light" />
         </Providers>
       </body>
     </html>
