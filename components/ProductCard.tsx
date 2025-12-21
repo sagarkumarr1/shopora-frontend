@@ -48,13 +48,19 @@ export default function ProductCard({ product }: { product: ProductProps }) {
         e.preventDefault();
         e.stopPropagation();
 
+        const cartId = product._id || product.id;
+        if (!cartId) {
+            toast.error("Product unavailable");
+            return;
+        }
+
         dispatch(addItem({
-            id: product._id || product.id,
+            id: cartId,
             title: product.title,
             price: product.price,
             image: product.image || (product.images && product.images[0]) || '/placeholder.png',
             quantity: 1,
-            variantId: product._id || product.id, // Fallback
+            variantId: typeof cartId === 'string' ? cartId : cartId.toString(),
             variantAttributes: {}
         }));
         toast.success("Added to cart!");
