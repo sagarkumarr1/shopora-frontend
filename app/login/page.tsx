@@ -66,7 +66,7 @@ export default function Login() {
         <div className="min-h-screen flex items-center justify-center bg-[#FDFBF7] p-4 font-sans">
             <div className="bg-white rounded-[2rem] shadow-2xl overflow-hidden max-w-md w-full border border-[#E5E0D8]">
                 {/* Header Image */}
-                <div className="relative h-48 md:h-56 w-full">
+                <div className="hidden md:block relative h-48 md:h-56 w-full">
                     <Image
                         src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&q=80"
                         alt="Fashion"
