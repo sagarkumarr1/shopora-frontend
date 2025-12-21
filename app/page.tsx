@@ -17,11 +17,16 @@ import productService from '@/services/productService';
 export default function Home() {
   const [bestDeals, setBestDeals] = useState<any[]>([]);
   const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Fetch Categories
+        const catRes = await productService.getCategories();
+        setCategories(catRes.data);
+
         // Fetch Category Deals
         const deals = await productService.getCategoryDeals();
         setBestDeals(deals.data);
@@ -95,18 +100,16 @@ export default function Home() {
             </div>
 
             <div className="flex gap-5 overflow-x-auto pb-4 scrollbar-hide px-1">
-              {[
-                { name: 'Men', icon: '/icons/tshirt.png', fallback: 'https://cdn-icons-png.flaticon.com/128/2589/2589903.png' },
-                { name: 'Women', icon: '/icons/dress.png', fallback: 'https://cdn-icons-png.flaticon.com/128/4430/4430580.png' },
-                { name: 'Shoes', icon: '/icons/shoe.png', fallback: 'https://cdn-icons-png.flaticon.com/128/2742/2742674.png' },
-                { name: 'Bags', icon: '/icons/bag.png', fallback: 'https://cdn-icons-png.flaticon.com/128/2965/2965567.png' },
-                { name: 'Watch', icon: '/icons/watch.png', fallback: 'https://cdn-icons-png.flaticon.com/128/878/878597.png' },
-              ].map((cat, i) => (
-                <div key={i} className="flex flex-col items-center gap-2 flex-shrink-0 cursor-pointer group" onClick={() => window.location.href = `/search?category=${cat.name}`}>
-                  <div className="w-[72px] h-[72px] rounded-full bg-[#F5F1EB] flex items-center justify-center shadow-sm border border-[#EBE3D9] group-hover:bg-[#EBE3D9] transition-colors">
-                    <img src={cat.fallback} alt={cat.name} className="w-8 h-8 opacity-70 group-hover:opacity-100 transition-opacity sepia-[0.3]" />
+              {categories.map((cat, i) => (
+                <div key={i} className="flex flex-col items-center gap-2 flex-shrink-0 cursor-pointer group" onClick={() => window.location.href = `/search?category=${encodeURIComponent(cat.name)}`}>
+                  <div className="w-[72px] h-[72px] rounded-full bg-[#F5F1EB] flex items-center justify-center shadow-sm border border-[#EBE3D9] group-hover:bg-[#EBE3D9] transition-colors overflow-hidden">
+                    {cat.image && cat.image !== 'no-photo.jpg' ? (
+                      <img src={cat.image} alt={cat.name} className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity" />
+                    ) : (
+                      <img src="https://cdn-icons-png.flaticon.com/128/706/706614.png" alt={cat.name} className="w-8 h-8 opacity-50 group-hover:opacity-80 transition-opacity sepia-[0.3]" />
+                    )}
                   </div>
-                  <span className="text-xs font-medium text-[#5D5D5D] tracking-wide">{cat.name}</span>
+                  <span className="text-xs font-medium text-[#5D5D5D] tracking-wide capitalize">{cat.name}</span>
                 </div>
               ))}
             </div>

@@ -57,6 +57,12 @@ const createReview = async (id: string, reviewData: any) => {
     return response.data;
 };
 
+// Get all categories
+const getCategories = async () => {
+    const response = await axios.get('categories');
+    return response.data;
+};
+
 const productService = {
     getProducts,
     getProductById,
@@ -65,7 +71,8 @@ const productService = {
     deleteProduct,
     getSuggestions,
     getCategoryDeals,
-    createReview
+    createReview,
+    getCategories
 };
 
 export default productService;

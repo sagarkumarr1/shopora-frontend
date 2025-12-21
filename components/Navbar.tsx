@@ -103,7 +103,7 @@ export default function Navbar() {
     const [showMobileSearch, setShowMobileSearch] = useState(false); // Kept for state compatibility, though new mobile design has persistent search
 
     return (
-        <nav className="fixed w-full z-50 bg-white/80 backdrop-blur-md border-b border-stone-100 font-sans top-0 transition-all duration-300">
+        <nav className="fixed w-full z-50 bg-white border-b border-stone-100 font-sans top-0 transition-all duration-300">
             <div className="max-w-7xl mx-auto px-4 lg:px-6">
 
                 {/* ============================== */}
