@@ -25,6 +25,10 @@ export default function ProductClientView({ product }: { product: any }) {
     const [comment, setComment] = useState('');
     const [image, setImage] = useState('');
 
+    // Swipe State
+    const [touchStart, setTouchStart] = useState<number | null>(null);
+    const [touchEnd, setTouchEnd] = useState<number | null>(null);
+
     // Variant State
     const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
     const [availableVariants, setAvailableVariants] = useState<any[]>([]);
@@ -176,8 +180,38 @@ export default function ProductClientView({ product }: { product: any }) {
                 <div className="bg-white rounded-[2.5rem] shadow-2xl shadow-[#C08C6C]/10 w-full overflow-hidden grid grid-cols-1 md:grid-cols-2 relative border border-[#E5E0D8]">
 
                     {/* Left: Image Section */}
-                    <div className="bg-[#F5F5F0] relative h-[50vh] md:h-full min-h-[500px] flex items-center justify-center p-8 md:p-12 group">
-                        <div className="relative w-full h-full max-h-[600px] flex items-center justify-center">
+                    <div
+                        className="bg-[#F5F5F0] relative h-[50vh] md:h-full min-h-[500px] flex items-center justify-center p-8 md:p-12 group select-none"
+                        onTouchStart={(e) => {
+                            const touch = e.touches[0];
+                            setTouchStart(touch.clientX);
+                            setTouchEnd(null);
+                        }}
+                        onTouchMove={(e) => {
+                            const touch = e.touches[0];
+                            setTouchEnd(touch.clientX);
+                        }}
+                        onTouchEnd={() => {
+                            if (!touchStart || !touchEnd) return;
+                            const distance = touchStart - touchEnd;
+                            const isLeftSwipe = distance > 50;
+                            const isRightSwipe = distance < -50;
+
+                            // Find current index
+                            const currentIndex = galleryImages.findIndex(img => img === activeImage);
+
+                            if (isLeftSwipe) {
+                                // Next Image
+                                const nextIndex = (currentIndex + 1) % galleryImages.length;
+                                setActiveImage(galleryImages[nextIndex]);
+                            } else if (isRightSwipe) {
+                                // Prev Image
+                                const prevIndex = (currentIndex - 1 + galleryImages.length) % galleryImages.length;
+                                setActiveImage(galleryImages[prevIndex]);
+                            }
+                        }}
+                    >
+                        <div className="relative w-full h-full max-h-[600px] flex items-center justify-center transition-opacity duration-300">
                             <Image
                                 src={activeImage || '/placeholder.png'}
                                 alt={product.title}
@@ -186,6 +220,35 @@ export default function ProductClientView({ product }: { product: any }) {
                                 priority
                             />
                         </div>
+
+                        {/* Navigation Arrows (Desktop) */}
+                        {galleryImages.length > 1 && (
+                            <>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        const currentIndex = galleryImages.findIndex(img => img === activeImage);
+                                        const prevIndex = (currentIndex - 1 + galleryImages.length) % galleryImages.length;
+                                        setActiveImage(galleryImages[prevIndex]);
+                                    }}
+                                    className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full items-center justify-center shadow-lg text-[#2D2D2D] z-20 transition-all opacity-0 group-hover:opacity-100"
+                                >
+                                    ←
+                                </button>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        const currentIndex = galleryImages.findIndex(img => img === activeImage);
+                                        const nextIndex = (currentIndex + 1) % galleryImages.length;
+                                        setActiveImage(galleryImages[nextIndex]);
+                                    }}
+                                    className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full items-center justify-center shadow-lg text-[#2D2D2D] z-20 transition-all opacity-0 group-hover:opacity-100"
+                                >
+                                    →
+                                </button>
+                            </>
+                        )}
+
                         {/* Thumbnails Floating or Bottom */}
                         {galleryImages.length > 1 && (
                             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3 p-2 bg-white/50 backdrop-blur-md rounded-full z-10">
