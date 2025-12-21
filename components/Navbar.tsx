@@ -208,10 +208,10 @@ export default function Navbar() {
                         </Link>
 
                         {/* Mobile Actions */}
-                        <div className="md:hidden flex items-center gap-3">
+                        <div className="md:hidden flex items-center gap-5 pr-2">
                             <button
                                 onClick={() => setShowMobileSearch(!showMobileSearch)}
-                                className={`text-lg transition-colors ${showMobileSearch ? 'text-[#C08C6C]' : 'text-[#5D5D5D]'}`}
+                                className={`text-xl transition-colors ${showMobileSearch ? 'text-[#C08C6C]' : 'text-[#5D5D5D]'}`}
                             >
                                 <FaSearch />
                             </button>
