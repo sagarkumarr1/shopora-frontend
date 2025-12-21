@@ -116,7 +116,7 @@ export default function Navbar() {
                     <div className="flex-shrink-0 flex items-center gap-2 cursor-pointer group" onClick={() => navigate.push('/')}>
                         <div className="bg-transparent p-0 rounded-xl transition-transform duration-300 hover:scale-105">
                             <img
-                                src="https://drive.google.com/uc?export=view&id=1RZwEAmqkq0ZIBrGN3iN64gEP5oFSGZHG"
+                                src="/logo.png"
                                 alt="ApniShop Logo"
                                 className="h-10 w-auto md:h-12 object-contain"
                             />
