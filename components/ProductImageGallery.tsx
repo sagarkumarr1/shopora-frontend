@@ -78,7 +78,7 @@ export default function ProductImageGallery({ images, activeImage, onImageSelect
 
             {/* Main Image Container */}
             <div
-                className="relative bg-[#F5F5F0] rounded-[2rem] overflow-hidden flex-1 group select-none min-h-[400px] md:min-h-full flex items-center justify-center cursor-crosshair"
+                className="relative bg-white md:bg-[#F5F5F0] md:rounded-[2rem] overflow-hidden flex-1 group select-none w-full aspect-square md:aspect-auto md:h-full flex items-center justify-center cursor-crosshair"
                 ref={mainImageRef}
                 onMouseMove={handleMouseMove}
                 onMouseEnter={() => setIsHovering(true)}
@@ -91,7 +91,7 @@ export default function ProductImageGallery({ images, activeImage, onImageSelect
                 onTouchEnd={handleTouchEnd}
             >
                 {/* Normal Image (visible when not hovering) */}
-                <div className={`relative w-full h-full p-8 transition-opacity duration-200 ${isHovering ? 'opacity-0' : 'opacity-100'}`}>
+                <div className={`relative w-full h-full p-2 md:p-8 transition-opacity duration-200 ${isHovering ? 'opacity-0' : 'opacity-100'}`}>
                     <Image
                         src={activeImage || '/placeholder.png'}
                         alt={title}
