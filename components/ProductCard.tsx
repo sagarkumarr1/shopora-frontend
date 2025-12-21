@@ -1,8 +1,9 @@
 'use client';
 
-import Image from 'next/image';
-import Link from 'next/link';
-import { FaHeart, FaStar } from 'react-icons/fa';
+import { useDispatch } from 'react-redux';
+import { addItem } from '@/store/cartSlice';
+import { FaHeart, FaStar, FaShoppingCart } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 // Helper to parse price safely
 const formatPrice = (price: number | undefined) => {
@@ -21,9 +22,11 @@ interface ProductProps {
     rating: number;
     reviews: any; // Can be number or array of objects
     images?: string[]; // Add images array to interface
+    showAddToCart?: boolean;
 }
 
 export default function ProductCard({ product }: { product: ProductProps }) {
+    const dispatch = useDispatch();
     // Fallback for id, prioritizes slug for SEO
     const productId = product.slug || product._id || product.id;
 
@@ -40,8 +43,24 @@ export default function ProductCard({ product }: { product: ProductProps }) {
         }
     }
 
+    const handleAddToCart = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        dispatch(addItem({
+            id: product._id || product.id,
+            title: product.title,
+            price: product.price,
+            image: product.image || (product.images && product.images[0]) || '/placeholder.png',
+            quantity: 1,
+            variantId: product._id || product.id, // Fallback
+            variantAttributes: {}
+        }));
+        toast.success("Added to cart!");
+    };
+
     return (
-        <Link href={`/product/${productId}`} className="group flex flex-col gap-3 cursor-pointer">
+        <Link href={`/product/${productId}`} className="group flex flex-col gap-3 cursor-pointer h-full">
             {/* Image Container */}
             <div className="relative w-full aspect-[4/5] bg-[#F0EBE6] rounded-[1.5rem] overflow-hidden">
                 <Image
@@ -62,7 +81,7 @@ export default function ProductCard({ product }: { product: ProductProps }) {
             </div>
 
             {/* Content Container */}
-            <div className="flex flex-col gap-1 px-1">
+            <div className="flex flex-col gap-1 px-1 flex-1">
                 <h3 className="font-serif text-[#2D2D2D] text-lg leading-tight font-medium line-clamp-1 group-hover:text-[#C08C6C] transition-colors">
                     {product.title}
                 </h3>
@@ -81,6 +100,16 @@ export default function ProductCard({ product }: { product: ProductProps }) {
                         </div>
                     )}
                 </div>
+
+                {/* Add to Cart Button (Conditional) */}
+                {product.showAddToCart && (
+                    <button
+                        onClick={handleAddToCart}
+                        className="mt-3 w-full py-2.5 border border-[#E5E0D8] rounded-xl text-[#5D5D5D] text-sm font-bold flex items-center justify-center gap-2 hover:bg-[#F9F9F5] hover:text-[#C08C6C] hover:border-[#C08C6C] transition-all"
+                    >
+                        <FaShoppingCart className="text-xs" /> Add to Cart
+                    </button>
+                )}
             </div>
         </Link>
     );
