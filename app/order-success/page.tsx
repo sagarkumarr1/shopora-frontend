@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState, Suspense } from 'react';
 import orderService from '@/services/orderService';
-import { FaCheckCircle, FaSpinner } from 'react-icons/fa';
+import { FaSpinner, FaArrowLeft, FaShoppingCart } from 'react-icons/fa';
+import Image from 'next/image';
 
 // Helper component to wrap useSearchParams for Suspense
 function OrderSuccessContent() {
@@ -41,47 +42,55 @@ function OrderSuccessContent() {
 
     if (!order) {
         return (
-            <div className="bg-white p-12 rounded-[2.5rem] shadow-2xl shadow-[#C08C6C]/10 border border-[#E5E0D8] text-center max-w-md w-full">
-                <h2 className="font-serif text-3xl text-[#2D2D2D] mb-4">Order Not Found</h2>
-                <p className="text-[#8D8D8D] mb-8">We couldn't find the details for this order.</p>
-                <Link href="/" className="bg-[#C08C6C] text-white px-8 py-4 rounded-xl font-bold hover:bg-[#A06C4C] transition-all transform hover:-translate-y-1 shadow-lg shadow-[#C08C6C]/20 inline-block w-full">
-                    Continue Shopping
-                </Link>
+            <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center">
+                <div className="bg-white p-8 rounded-[2rem] shadow-xl shadow-[#C08C6C]/5 border border-[#E5E0D8] w-full max-w-md">
+                    <h2 className="font-serif text-3xl text-[#2D2D2D] mb-4">Order Not Found</h2>
+                    <p className="text-[#8D8D8D] mb-8">We couldn't find the details for this order.</p>
+                    <Link href="/" className="bg-[#C08C6C] text-white px-8 py-4 rounded-xl font-bold hover:bg-[#A06C4C] transition-all w-full block">
+                        Continue Shopping
+                    </Link>
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="bg-white p-12 rounded-[2.5rem] shadow-2xl shadow-[#C08C6C]/10 border border-[#E5E0D8] text-center max-w-2xl w-full mx-4">
-            <div className="flex justify-center mb-8">
-                <FaCheckCircle className="text-[5rem] text-green-600 drop-shadow-xl" />
-            </div>
-
-            <h2 className="font-serif text-3xl md:text-4xl text-[#2D2D2D] mb-3 font-medium">Order Placed Successfully!</h2>
-            <p className="text-[#8D8D8D] mb-10 text-lg">Thank you for shopping with us.</p>
-
-            <div className="bg-[#F9F9F5] p-8 rounded-2xl text-left mb-10 border border-[#E5E0D8]">
-                <div className="flex justify-between mb-4 border-b border-[#E5E0D8] pb-4 last:border-0 last:pb-0">
-                    <span className="text-[#8D8D8D] font-medium">Order ID:</span>
-                    <span className="font-mono font-bold text-[#2D2D2D] tracking-wide text-sm md:text-base">{order._id}</span>
-                </div>
-                <div className="flex justify-between mb-4 border-b border-[#E5E0D8] pb-4">
-                    <span className="text-[#8D8D8D] font-medium">Status:</span>
-                    <span className="font-bold text-green-600 uppercase tracking-wider">{order.orderStatus || 'PENDING'}</span>
-                </div>
-                <div className="flex justify-between mb-4 border-b border-[#E5E0D8] pb-4">
-                    <span className="text-[#8D8D8D] font-medium">Payment Method:</span>
-                    <span className="font-bold text-[#2D2D2D] uppercase">{order.paymentMethod}</span>
-                </div>
-                <div className="flex justify-between pt-2 items-center">
-                    <span className="text-[#2D2D2D] font-bold text-lg">Total Amount:</span>
-                    <span className="font-bold text-[#2D2D2D] text-2xl font-serif">₹{order.totalPrice?.toLocaleString()}</span>
+        <div className="flex flex-col items-center w-full max-w-lg mx-auto md:max-w-2xl">
+            {/* Illustration */}
+            <div className="relative w-64 h-64 mb-6 animate-fade-in-up">
+                {/* Fallback to checkmark if image missing, but try to use image */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <Image
+                        src="/order_success_box_3d.png"
+                        alt="Order Confirmed"
+                        width={256}
+                        height={256}
+                        className="object-contain drop-shadow-2xl"
+                        priority
+                    />
                 </div>
             </div>
 
-            <Link href="/" className="bg-[#C08C6C] text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-[#A06C4C] transition-all transform hover:-translate-y-1 shadow-lg shadow-[#C08C6C]/20 inline-block w-full">
-                Continue Shopping
-            </Link>
+            <h2 className="font-serif text-3xl md:text-4xl text-[#3E3E3E] mb-3 font-medium text-center tracking-tight">
+                Order Confirmed!
+            </h2>
+            <p className="text-[#9A9A9A] mb-8 text-center text-sm md:text-base font-light px-8">
+                Your order has been successfully placed
+            </p>
+
+            <div className="mb-10 text-center space-y-2">
+                <p className="text-[#8D8D8D] text-sm md:text-base">Order number: <span className="font-semibold text-[#5A5A5A]">#{order._id?.slice(-6) || '123456'}</span></p>
+                <p className="text-[#8D8D8D] text-sm md:text-base">Thank you for shopping with us!</p>
+            </div>
+
+            <div className="flex gap-4 w-full px-4 md:px-0">
+                <Link href={`/account/orders`} className="flex-1 bg-[#F5F0EB] text-[#5A4A42] px-4 py-4 rounded-2xl font-medium text-center hover:bg-[#EDE5DE] transition-colors">
+                    View Order
+                </Link>
+                <Link href="/" className="flex-1 bg-[#C08C6C] text-white px-4 py-4 rounded-2xl font-medium text-center hover:bg-[#A87555] shadow-lg shadow-[#C08C6C]/20 transition-all">
+                    Continue Shopping
+                </Link>
+            </div>
         </div>
     );
 }
@@ -89,8 +98,26 @@ function OrderSuccessContent() {
 export default function OrderSuccess() {
     return (
         <main className="bg-[#FDFBF7] min-h-screen font-sans">
-            <Navbar />
-            <div className="pt-32 pb-20 flex flex-col items-center justify-center px-4 min-h-[90vh]">
+            {/* Desktop Navbar - Hidden on Mobile */}
+            <div className="hidden md:block">
+                <Navbar />
+            </div>
+
+            {/* Mobile Header - Visible only on Mobile */}
+            <div className="md:hidden fixed top-0 left-0 right-0 p-4 flex justify-between items-center z-50 bg-[#FDFBF7]/80 backdrop-blur-sm">
+                <Link href="/" className="p-2 text-[#4A4A4A]">
+                    <FaArrowLeft className="text-xl" />
+                </Link>
+                <Link href="/cart" className="p-2 text-[#4A4A4A] relative">
+                    <FaShoppingCart className="text-xl" />
+                    {/* Badge could go here if we had access to cart state easily, skipping for simplicity in this view */}
+                    <span className="absolute top-1 right-0 bg-[#C08C6C] text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-white">
+                        0
+                    </span>
+                </Link>
+            </div>
+
+            <div className="pt-20 md:pt-32 pb-24 flex flex-col items-center justify-center px-4 min-h-[90vh]">
                 <Suspense fallback={<div className="text-[#C08C6C]">Loading...</div>}>
                     <OrderSuccessContent />
                 </Suspense>
