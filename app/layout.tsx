@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     description: 'The best place to buy everything. Shop premium products with ease.',
     images: [
       {
-        url: '/og-image.jpg', // Ensure this image exists in public folder or remove
+        url: '/og-image.png', // Ensure this image exists in public folder or remove
         width: 1200,
         height: 630,
         alt: 'Shopora Preview',
