@@ -234,6 +234,27 @@ export default function Navbar() {
                             />
                             <FaSearch className="absolute left-3.5 top-3.5 text-[#8D8D8D] text-sm" />
                         </form>
+
+                        {/* Mobile Suggestions Dropdown */}
+                        {showSuggestions && suggestions.length > 0 && (
+                            <div className="absolute left-4 right-4 bg-white shadow-xl rounded-xl border border-[#E5E0D8] mt-2 overflow-hidden z-50 max-h-[60vh] overflow-y-auto">
+                                {suggestions.map((item) => (
+                                    <Link
+                                        key={item._id}
+                                        href={`/product/${item._id}`}
+                                        className="block px-4 py-3 hover:bg-[#F9F9F5] flex items-center gap-3 transition-colors border-b border-[#F5F5F0] last:border-none"
+                                        onClick={() => {
+                                            setShowSuggestions(false);
+                                            setShowMobileSearch(false);
+                                        }}
+                                    >
+                                        <FaSearch className="text-[#8D8D8D] text-xs flex-shrink-0" />
+                                        <span className="text-[#2D2D2D] text-sm font-medium line-clamp-1">{item.title}</span>
+                                        <span className="text-xs text-[#8D8D8D] ml-auto uppercase flex-shrink-0 bg-[#F5F5F0] px-2 py-0.5 rounded">{item.category}</span>
+                                    </Link>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
