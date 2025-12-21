@@ -41,9 +41,9 @@ export default function ProductCard({ product }: { product: ProductProps }) {
     }
 
     return (
-        <Link href={`/product/${productId}`} className="group flex flex-col gap-2 md:gap-3 cursor-pointer">
-            <div className="relative w-full aspect-[3/4] md:aspect-[4/5] bg-[#F5F5F0] rounded-xl md:rounded-[1.25rem] overflow-hidden mb-1 md:mb-2">
-                {/* Image */}
+        <Link href={`/product/${productId}`} className="group flex flex-col gap-3 cursor-pointer">
+            {/* Image Container */}
+            <div className="relative w-full aspect-[4/5] bg-[#F0EBE6] rounded-[1.5rem] overflow-hidden">
                 <Image
                     src={product.image || (product.images && product.images[0]) || '/placeholder.png'}
                     alt={product.title || 'Product'}
@@ -52,40 +52,33 @@ export default function ProductCard({ product }: { product: ProductProps }) {
                     sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
                 />
 
-                {/* Overlay Actions */}
-                <div className="absolute top-2 right-2 md:top-3 md:right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <button className="bg-white p-2 md:p-2.5 rounded-full shadow-lg text-[#2D2D2D] hover:text-[#C08C6C] transition-colors">
-                        <FaHeart className="text-xs md:text-sm" />
+                {/* Wishlist Button (Top Right) */}
+                <div className="absolute top-3 right-3">
+                    <button className="bg-white/80 backdrop-blur-sm p-2 rounded-full shadow-sm text-[#5D5D5D] hover:text-[#C08C6C] transition-colors relative z-10">
+                        <FaHeart className="text-sm" />
                     </button>
+                    {/* Shadow/Overlay click fix */}
                 </div>
-
-                {/* Badges */}
-                {product.discount && (
-                    <div className="absolute top-2 left-2 md:top-3 md:left-3 bg-white/90 backdrop-blur-sm px-2 py-0.5 md:px-2.5 md:py-1 rounded-full">
-                        <span className="text-[9px] md:text-[10px] font-bold tracking-widest uppercase text-[#2D2D2D]">{product.discount} OFF</span>
-                    </div>
-                )}
             </div>
 
-            <div className="flex flex-col gap-0.5 md:gap-1 px-0.5 md:px-1">
-                {/* Title */}
-                <h3 className="font-serif text-[#2D2D2D] text-sm md:text-lg leading-snug group-hover:text-[#C08C6C] transition-colors line-clamp-2 h-auto font-medium">
+            {/* Content Container */}
+            <div className="flex flex-col gap-1 px-1">
+                <h3 className="font-serif text-[#2D2D2D] text-lg leading-tight font-medium line-clamp-1 group-hover:text-[#C08C6C] transition-colors">
                     {product.title}
                 </h3>
 
-                {/* Rating - Minimal */}
-                <div className="flex items-center gap-1 text-[10px] md:text-xs text-[#8D8D8D]">
-                    <FaStar className="text-[#C08C6C]" />
-                    <span className="font-medium text-[#5D5D5D]">{product.rating || 0}</span>
-                    <span className="hidden md:inline">({Array.isArray(product.reviews) ? product.reviews.length : (product.reviews || 0)})</span>
-                    <span className="md:hidden">({Array.isArray(product.reviews) ? product.reviews.length : (product.reviews || 0)})</span>
-                </div>
+                <div className="flex items-center justify-between mt-1">
+                    <div className="flex flex-col leading-none">
+                        <span className="text-xl font-bold text-[#2D2D2D] tracking-tight">₹{formatPrice(product.price)}</span>
+                        {displayOriginalPrice && (
+                            <span className="text-xs text-[#8D8D8D] line-through mt-0.5">₹{formatPrice(displayOriginalPrice)}</span>
+                        )}
+                    </div>
 
-                {/* Price */}
-                <div className="flex items-baseline gap-1.5 md:gap-2 mt-0.5 md:mt-1">
-                    <span className="text-sm md:text-lg font-bold text-[#2D2D2D]">₹{formatPrice(product.price)}</span>
-                    {displayOriginalPrice && (
-                        <span className="text-[10px] md:text-xs text-[#8D8D8D] line-through decoration-stone-300">₹{formatPrice(displayOriginalPrice)}</span>
+                    {product.discount && (
+                        <div className="bg-[#C08C6C] text-white text-[10px] font-bold px-2.5 py-1 rounded-lg uppercase tracking-wider">
+                            {product.discount} OFF
+                        </div>
                     )}
                 </div>
             </div>
