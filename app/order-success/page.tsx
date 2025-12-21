@@ -84,7 +84,7 @@ function OrderSuccessContent() {
             </div>
 
             <div className="flex gap-4 w-full px-4 md:px-0">
-                <Link href={`/account/orders`} className="flex-1 bg-[#F5F0EB] text-[#5A4A42] px-4 py-4 rounded-2xl font-medium text-center hover:bg-[#EDE5DE] transition-colors md:text-lg">
+                <Link href={`/order/${order._id}`} className="flex-1 bg-[#F5F0EB] text-[#5A4A42] px-4 py-4 rounded-2xl font-medium text-center hover:bg-[#EDE5DE] transition-colors md:text-lg">
                     View Order
                 </Link>
                 <Link href="/" className="flex-1 bg-[#C08C6C] text-white px-4 py-4 rounded-2xl font-medium text-center hover:bg-[#A87555] shadow-lg shadow-[#C08C6C]/20 transition-all md:text-lg">
