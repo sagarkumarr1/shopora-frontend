@@ -213,7 +213,7 @@ export default function ProductClientView({ product }: { product: any }) {
                             />
                             {/* Pagination Dots Overlay */}
                             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
-                                {galleryImages.map((_, idx) => (
+                                {galleryImages.map((_: any, idx: number) => (
                                     <div key={idx} className={`w-1.5 h-1.5 rounded-full ${activeImage === galleryImages[idx] ? 'bg-white' : 'bg-white/50'}`}></div>
                                 ))}
                             </div>
