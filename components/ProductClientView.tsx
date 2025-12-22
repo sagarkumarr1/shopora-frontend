@@ -2,12 +2,12 @@
 
 import Navbar from '@/components/Navbar';
 import { useState, useEffect } from 'react';
-import { FaHeart, FaStar, FaShoppingCart, FaBolt, FaTruck, FaUndo, FaMoneyBillWave, FaRegHeart, FaCheckCircle, FaChevronRight } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
+import { FaHeart, FaStar, FaShoppingCart, FaBolt, FaTruck, FaUndo, FaMoneyBillWave, FaRegHeart, FaCheckCircle, FaChevronRight, FaSearch } from 'react-icons/fa';
+import { useDispatch, useSelector } from 'react-redux';
 import { addItem, setCheckoutItems } from '@/store/cartSlice';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
-import { AppDispatch } from '@/store/store';
+import { AppDispatch, RootState } from '@/store/store';
 import Image from 'next/image';
 import productService from '@/services/productService';
 import Link from 'next/link';
@@ -19,6 +19,7 @@ import ProductImageGallery from './ProductImageGallery';
 export default function ProductClientView({ product }: { product: any }) {
     const dispatch = useDispatch<AppDispatch>();
     const router = useRouter();
+    const cartItems = useSelector((state: RootState) => state.cart.cartItems);
 
     const [activeImage, setActiveImage] = useState(product?.image);
     const [activeTab, setActiveTab] = useState('description');
@@ -181,18 +182,35 @@ export default function ProductClientView({ product }: { product: any }) {
 
             {/* MOBILE VIEW (MD:HIDDEN) */}
             <div className="md:hidden">
-                {/* Header */}
-                <div className="fixed top-0 left-0 right-0 z-50 p-4 flex justify-between items-center bg-transparent pointer-events-none">
+                {/* Header (Absolute - scrolls with page) */}
+                <div className="absolute top-0 left-0 right-0 z-50 p-4 flex justify-between items-center bg-transparent pointer-events-none">
                     {/* Back Button */}
-                    <button onClick={() => router.back()} className="w-10 h-10 bg-transparent flex items-center justify-center text-[#2D2D2D] pointer-events-auto">
+                    <button onClick={() => router.back()} className="w-10 h-10 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center shadow-sm text-[#2D2D2D] pointer-events-auto transition-transform active:scale-95">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5" /><path d="M12 19l-7-7 7-7" /></svg>
                     </button>
-                    {/* Breadcrumb / Title */}
-                    <div className="text-sm font-medium text-[#5D5D5D] opacity-0">Product</div>
-                    {/* Wishlist */}
-                    <button onClick={() => setIsWishlisted(!isWishlisted)} className="w-10 h-10 flex items-center justify-center text-[#2D2D2D] pointer-events-auto">
-                        {isWishlisted ? <FaHeart className="text-[#C08C6C] text-xl" /> : <FaRegHeart className="text-xl" />}
-                    </button>
+
+                    {/* Right Icons: Search, Cart, Wishlist */}
+                    <div className="flex items-center gap-3 pointer-events-auto">
+                        {/* Search */}
+                        <Link href="/search" className="w-10 h-10 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center shadow-sm text-[#2D2D2D] transition-transform active:scale-95">
+                            <FaSearch className="text-lg" />
+                        </Link>
+
+                        {/* Cart */}
+                        <Link href="/cart" className="w-10 h-10 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center shadow-sm text-[#2D2D2D] relative transition-transform active:scale-95">
+                            <FaShoppingCart className="text-lg" />
+                            {cartItems.length > 0 && (
+                                <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-bold w-5 h-5 border-2 border-white rounded-full flex items-center justify-center">
+                                    {cartItems.length}
+                                </span>
+                            )}
+                        </Link>
+
+                        {/* Wishlist */}
+                        <button onClick={() => setIsWishlisted(!isWishlisted)} className="w-10 h-10 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center shadow-sm text-[#2D2D2D] transition-transform active:scale-95">
+                            {isWishlisted ? <FaHeart className="text-[#C08C6C] text-xl" /> : <FaRegHeart className="text-xl" />}
+                        </button>
+                    </div>
                 </div>
 
                 {/* Main Product Image */}
