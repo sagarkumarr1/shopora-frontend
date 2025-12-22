@@ -16,22 +16,101 @@ import { usePathname } from 'next/navigation';
 export default function Navbar() {
     const navigate = useRouter();
     const pathname = usePathname();
-    const { scrollDirection, scrollY } = useScrollDirection();
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768; // simple check or use CSS media query logic class
+    const dispatch = useDispatch<AppDispatch>();
+    const { user } = useSelector((state: RootState) => state.auth);
+    const { cartItems } = useSelector((state: RootState) => state.cart);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [suggestions, setSuggestions] = useState<any[]>([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const [mounted, setMounted] = useState(false);
+    const searchRef = useRef<HTMLDivElement>(null);
+    const mobileSearchRef = useRef<HTMLDivElement>(null);
+    const [showProfileMenu, setShowProfileMenu] = useState(false);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const [showMobileMenu, setShowMobileMenu] = useState(false);
+    const [showMobileSearch, setShowMobileSearch] = useState(false); // Kept for state compatibility
 
-    // Hide Navbar on Product Page (Mobile) - Product page has custom header
-    if (pathname?.startsWith('/product/') && isMobile) {
-        // We return null or hidden div for mobile if we want to completely remove it.
-        // But checking previous logic, Navbar was "hidden md:flex" for Desktop and "md:hidden" for Mobile parts.
-        // Actually Navbar contains BOTH. Desktop is lines 112+. Mobile is 214+.
-        // ProductLayout usually includes Navbar.
-        // Should we hide the ENTIRE Navbar on mobile product page? User said "Product page header hides...". Product page HAS its own header.
-        // So standard Navbar should probably be hidden on mobile product page to avoid double headers.
-    }
+    const { scrollDirection, scrollY } = useScrollDirection();
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
     // Scroll Logic for Home Page (Mobile)
     const isHome = pathname === '/';
     const isHide = isHome && scrollDirection === 'down' && scrollY > 50;
+
+    const handleProfileEnter = () => {
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+            timeoutRef.current = null;
+        }
+        setShowProfileMenu(true);
+    };
+
+    const handleProfileLeave = () => {
+        timeoutRef.current = setTimeout(() => {
+            setShowProfileMenu(false);
+        }, 300);
+    };
+
+    useEffect(() => {
+        setMounted(true);
+        if (user) {
+            dispatch(fetchCart());
+        }
+    }, [user, dispatch]);
+
+    const onLogout = () => {
+        dispatch(logout());
+        dispatch(reset());
+        navigate.push('/');
+    };
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (searchTerm.trim()) {
+            setShowSuggestions(false);
+            navigate.push(`/search?q=${encodeURIComponent(searchTerm)}`);
+        }
+    };
+
+    // Debounced search suggestions
+    useEffect(() => {
+        const timer = setTimeout(async () => {
+            if (searchTerm.trim().length > 1) {
+                try {
+                    const res = await productService.getSuggestions(searchTerm);
+                    setSuggestions(res.data);
+                    setShowSuggestions(true);
+                } catch (error) {
+                    console.error(error);
+                }
+            } else {
+                setSuggestions([]);
+                setShowSuggestions(false);
+            }
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [searchTerm]);
+
+    // Close suggestions when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as Node;
+            if (
+                searchRef.current &&
+                !searchRef.current.contains(target) &&
+                mobileSearchRef.current &&
+                !mobileSearchRef.current.contains(target)
+            ) {
+                setShowSuggestions(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
     return (
         <nav className={`fixed w-full z-50 bg-white border-b border-stone-100 font-sans top-0 transition-transform duration-300 ${isHide ? '-translate-y-full' : 'translate-y-0'}`}>

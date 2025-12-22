@@ -13,6 +13,7 @@ import productService from '@/services/productService';
 import Link from 'next/link';
 import Skeleton from './Skeleton';
 import ProductImageGallery from './ProductImageGallery';
+import useScrollDirection from '@/hooks/useScrollDirection';
 
 // ... (imports remain)
 
@@ -28,6 +29,10 @@ export default function ProductClientView({ product }: { product: any }) {
     const [image, setImage] = useState('');
     const [quantity, setQuantity] = useState(1);
     const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+
+    const { scrollDirection, scrollY } = useScrollDirection();
+    const isHideHeader = scrollDirection === 'down' && scrollY > 50;
+    const showCompactHeader = scrollY > 100;
 
     // Variant State
     const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
@@ -181,14 +186,7 @@ export default function ProductClientView({ product }: { product: any }) {
                 <Navbar />
             </div>
 
-            import useScrollDirection from '@/hooks/useScrollDirection';
-
-            // ... (in component)
-            const {scrollDirection, scrollY} = useScrollDirection();
-    const isHideHeader = scrollDirection === 'down' && scrollY > 50;
-    const showCompactHeader = scrollY > 100; // threshold to switch to product name
-
-            // ... (in return)
+            {/* Mobile View Content */}
             <div className="md:hidden pb-12 bg-[#FDFBF7]">
                 {/* 1. HEADER (Fixed Top) */}
                 <div className={`fixed top-0 left-0 right-0 z-50 h-[3.5rem] bg-white/90 backdrop-blur-md flex justify-between items-center px-4 shadow-sm transition-transform duration-300 ${isHideHeader ? '-translate-y-full' : 'translate-y-0'}`}>
