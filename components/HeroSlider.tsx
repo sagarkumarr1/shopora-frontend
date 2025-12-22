@@ -56,14 +56,31 @@ export default function HeroSlider() {
                 >
                     <Link href={hero.link || '/'}>
                         <div className="relative w-full h-full cursor-pointer">
-                            <Image
-                                src={hero.image}
-                                alt={hero.title || 'Banner'}
-                                fill
-                                className="object-cover"
-                                priority={index === 0}
-                                sizes="100vw"
-                            />
+                            {/* Desktop Image */}
+                            <div className={`relative w-full h-full ${hero.mobileImage ? 'hidden md:block' : ''}`}>
+                                <Image
+                                    src={hero.image}
+                                    alt={hero.title || 'Banner'}
+                                    fill
+                                    className="object-cover"
+                                    priority={index === 0}
+                                    sizes="100vw"
+                                />
+                            </div>
+
+                            {/* Mobile Image (if available) */}
+                            {hero.mobileImage && (
+                                <div className="relative w-full h-full md:hidden">
+                                    <Image
+                                        src={hero.mobileImage}
+                                        alt={hero.title || 'Mobile Banner'}
+                                        fill
+                                        className="object-cover"
+                                        priority={index === 0}
+                                        sizes="100vw"
+                                    />
+                                </div>
+                            )}
                             {/* Overlay/Caption */}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent flex items-end p-6 md:p-12">
                                 <div className="text-white max-w-2xl transform transition-transform duration-700 translate-y-0 group-hover:-translate-y-2">

@@ -11,8 +11,10 @@ export default function ManageHero() {
     const [loading, setLoading] = useState(true);
     const [formData, setFormData] = useState({
         title: '',
+        title: '',
         subtitle: '',
         image: '',
+        mobileImage: '',
         link: '/'
     });
 
@@ -40,7 +42,7 @@ export default function ManageHero() {
         try {
             await axios.post('hero', formData);
             toast.success('Banner added successfully');
-            setFormData({ title: '', subtitle: '', image: '', link: '/' });
+            setFormData({ title: '', subtitle: '', image: '', mobileImage: '', link: '/' });
             fetchHeroes();
         } catch (error: any) {
             toast.error(error.response?.data?.error || 'Failed to add banner');
@@ -69,11 +71,21 @@ export default function ManageHero() {
                     <h2 className="text-xl font-semibold mb-4 text-gray-700">Add New Banner</h2>
                     <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-gray-700 font-medium mb-1">Image URL</label>
+                            <label className="block text-gray-700 font-medium mb-1">Desktop Image URL</label>
                             <input
                                 required
                                 name="image"
                                 value={formData.image}
+                                onChange={handleChange}
+                                placeholder="https://..."
+                                className="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-gray-700 font-medium mb-1">Mobile Image URL (Optional)</label>
+                            <input
+                                name="mobileImage"
+                                value={formData.mobileImage}
                                 onChange={handleChange}
                                 placeholder="https://..."
                                 className="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none"
@@ -127,6 +139,7 @@ export default function ManageHero() {
                         <div key={hero._id} className="bg-white p-4 rounded-lg shadow flex flex-col md:flex-row gap-4 items-center">
                             <div className="w-full md:w-48 h-32 relative bg-gray-100 rounded overflow-hidden">
                                 <img src={hero.image} alt={hero.title} className="w-full h-full object-cover" />
+                                {hero.mobileImage && <div className="absolute bottom-0 right-0 bg-blue-500 text-white text-[10px] px-1">Mobile</div>}
                             </div>
                             <div className="flex-1">
                                 <h3 className="font-bold text-lg">{hero.title || 'No Title'}</h3>
