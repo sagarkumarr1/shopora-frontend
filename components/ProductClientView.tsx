@@ -153,7 +153,7 @@ export default function ProductClientView({ product }: { product: any }) {
             setRating(0);
             setComment('');
             setImage('');
-            router.refresh();
+            window.location.reload();
         } catch (error: any) {
             toast.error(error.response?.data?.error || "Failed to submit review");
         }
@@ -256,46 +256,37 @@ export default function ProductClientView({ product }: { product: any }) {
                     </div>
 
                     {/* Selectors */}
-                    {/* Size */}
-                    <div className="mb-4">
-                        <div className="flex justify-between items-center mb-2">
-                            <span className="text-sm font-bold text-[#2D2D2D]">Select Size</span>
-                        </div>
-                        {/* Mock Size Selector if no variants, else existing logic */}
-                        {variantKeys.includes('Size') ? (
-                            <div className="flex gap-3">
-                                {Array.from(new Set(availableVariants.map(v => v.attributes['Size']))).map((size: any) => (
-                                    <button
-                                        key={size}
-                                        onClick={() => handleAttributeSelect('Size', size)}
-                                        className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-medium transition-colors ${selectedAttributes['Size'] === size ? 'bg-[#ae856b] text-white' : 'bg-[#F2F0EB] text-[#5D5D5D]'}`}
-                                    >
-                                        {size}
-                                    </button>
-                                ))}
-                            </div>
-                        ) : (
-                            // Fallback Mockup Sizes if data missing, just for UI demo per user request 'like this image'
-                            <div className="flex gap-3">
-                                {['S', 'M', 'L', 'XL'].map(s => (
-                                    <button key={s} className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-medium bg-[#F2F0EB] text-[#5D5D5D] hover:bg-[#E5E0D8]`}>{s}</button>
-                                ))}
-                            </div>
-                        )}
-                    </div>
+                    {/* Dynamic Variants Selection (Mobile) */}
+                    {variantKeys.length > 0 && (
+                        <div className="space-y-4 mb-6">
+                            {variantKeys.map(key => {
+                                // Get unique values for this key
+                                const uniqueValues = Array.from(new Set(availableVariants.map(v => v.attributes[key])));
 
-                    {/* Color */}
-                    <div className="mb-6">
-                        <div className="flex justify-between items-center mb-2">
-                            <span className="text-sm font-bold text-[#2D2D2D]">Select Color</span>
+                                return (
+                                    <div key={key}>
+                                        <div className="flex justify-between items-center mb-2">
+                                            <span className="text-sm font-bold text-[#2D2D2D] capitalize">{key}</span>
+                                        </div>
+                                        <div className="flex gap-3 flex-wrap">
+                                            {uniqueValues.map((val: any) => {
+                                                const isSelected = selectedAttributes[key] === val;
+                                                return (
+                                                    <button
+                                                        key={val}
+                                                        onClick={() => handleAttributeSelect(key, val)}
+                                                        className={`min-w-[40px] px-3 h-10 rounded-lg flex items-center justify-center text-sm font-medium transition-colors ${isSelected ? 'bg-[#ae856b] text-white' : 'bg-[#F2F0EB] text-[#5D5D5D]'}`}
+                                                    >
+                                                        {val}
+                                                    </button>
+                                                )
+                                            })}
+                                        </div>
+                                    </div>
+                                )
+                            })}
                         </div>
-                        {/* Mock Color Dropdown visual */}
-                        <div className="inline-flex items-center gap-2 bg-[#F2F0EB] px-3 py-2 rounded-lg border border-[#E5E0D8] text-sm text-[#5D5D5D]">
-                            <div className="w-4 h-4 rounded bg-[#E8DCC6]"></div>
-                            <span>Beige</span>
-                            <FaChevronRight className="rotate-90 text-[10px] ml-2 opacity-50" />
-                        </div>
-                    </div>
+                    )}
 
                     {/* Quantity & Add to Cart */}
                     <div className="flex gap-4 mb-8">
