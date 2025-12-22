@@ -181,11 +181,20 @@ export default function ProductClientView({ product }: { product: any }) {
                 <Navbar />
             </div>
 
-            {/* MOBILE VIEW (MD:HIDDEN) */}
+            import useScrollDirection from '@/hooks/useScrollDirection';
+
+            // ... (in component)
+            const {scrollDirection, scrollY} = useScrollDirection();
+    const isHideHeader = scrollDirection === 'down' && scrollY > 50;
+    const showCompactHeader = scrollY > 100; // threshold to switch to product name
+
+            // ... (in return)
             <div className="md:hidden pb-12 bg-[#FDFBF7]">
                 {/* 1. HEADER (Fixed Top) */}
-                <div className="fixed top-0 left-0 right-0 z-50 h-14 bg-white/90 backdrop-blur-md flex justify-between items-center px-4 shadow-sm">
-                    <span className="font-serif text-xl font-bold text-[#C08C6C]">ApnaShop</span>
+                <div className={`fixed top-0 left-0 right-0 z-50 h-[3.5rem] bg-white/90 backdrop-blur-md flex justify-between items-center px-4 shadow-sm transition-transform duration-300 ${isHideHeader ? '-translate-y-full' : 'translate-y-0'}`}>
+                    <span className="font-serif text-xl font-bold text-[#C08C6C] truncate max-w-[60%]">
+                        {showCompactHeader ? product.title : 'ApnaShop'}
+                    </span>
                     <div className="flex items-center gap-4">
                         <Link href="/search" className="text-[#2D2D2D]">
                             <FaSearch className="text-lg" />
