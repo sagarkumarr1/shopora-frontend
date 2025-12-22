@@ -182,217 +182,220 @@ export default function ProductClientView({ product }: { product: any }) {
             </div>
 
             {/* MOBILE VIEW (MD:HIDDEN) */}
-            <div className="md:hidden">
-                {/* Header (Absolute - scrolls with page) */}
-                <div className="absolute top-0 left-0 right-0 z-50 p-4 flex justify-between items-center bg-transparent pointer-events-none">
-                    <div className="flex items-center gap-2 pointer-events-auto">
-                        {/* Back Button */}
-                        <button onClick={() => router.back()} className="w-8 h-8 flex items-center justify-center text-[#2D2D2D]">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5" /><path d="M12 19l-7-7 7-7" /></svg>
-                        </button>
-                        {/* Breadcrumb based on Mockup */}
-                        <span className="text-sm font-medium text-[#5D5D5D] capitalize">
-                            {product.category || 'Category'} <span className="text-[#8D8D8D]">&gt;</span> {product.category_sub || 'Product'}
-                        </span>
-                    </div>
-
-                    {/* Right Icons: Search, Cart, Wishlist */}
-                    <div className="flex items-center gap-4 pointer-events-auto">
-                        {/* Wishlist Icon only per mockup focus, or keep others if user insisted 'search bar icon cart ke bagal me' which we did */}
-                        {/* Search */}
-                        {/* Note: Mockup shows Heart icon on right. User asked for Search + Cart previously. Keeping user request + Mockup aesthetics */}
-
-                        {/* Wishlist (Mockup shows this prominent) */}
-                        <button onClick={() => setIsWishlisted(!isWishlisted)} className="text-[#2D2D2D]">
-                            {isWishlisted ? <FaHeart className="text-[#C08C6C] text-xl" /> : <FaRegHeart className="text-xl" />}
-                        </button>
+            <div className="md:hidden pb-12 bg-[#FDFBF7]">
+                {/* 1. HEADER (Fixed Top) */}
+                <div className="fixed top-0 left-0 right-0 z-50 h-14 bg-white/90 backdrop-blur-md flex justify-between items-center px-4 shadow-sm">
+                    <span className="font-serif text-xl font-bold text-[#C08C6C]">ApnaShop</span>
+                    <div className="flex items-center gap-4">
+                        <Link href="/search" className="text-[#2D2D2D]">
+                            <FaSearch className="text-lg" />
+                        </Link>
+                        <Link href="/cart" className="relative text-[#2D2D2D]">
+                            <FaShoppingCart className="text-lg" />
+                            {cartItems.length > 0 && (
+                                <span className="absolute -top-1.5 -right-1.5 bg-[#C08C6C] text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                                    {cartItems.length}
+                                </span>
+                            )}
+                        </Link>
                     </div>
                 </div>
 
-                {/* Main Product Image - Mockup has large image with pagination dots at bottom */}
-                <div className="relative w-full aspect-[4/5] bg-[#F0EBE6]">
+                {/* Spacer for Fixed Header */}
+                <div className="h-14"></div>
+
+                {/* 2. PRODUCT IMAGE SECTION (Swipeable) */}
+                <div className="relative w-full aspect-[4/5] bg-[#F5F1EB]">
                     <Image
                         src={activeImage || '/placeholder.png'}
                         alt={product.title}
                         fill
                         className="object-cover"
                         priority
+                        onClick={() => { /* Potential Full Screen Trigger */ }}
                     />
-
-                    {/* Pagination Dots (Bottom Center) - Decorative based on mockup */}
-                    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-1.5">
+                    {/* Dots Indicator */}
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
                         {galleryImages.map((_: any, i: number) => (
-                            <div key={i} className={`w-1.5 h-1.5 rounded-full ${activeImage === galleryImages[i] ? 'bg-white' : 'bg-white/50'}`} />
+                            <div key={i} className={`w-2 h-2 rounded-full transition-all ${activeImage === galleryImages[i] ? 'bg-[#C08C6C] w-4' : 'bg-white/60'}`} />
                         ))}
                     </div>
-                </div>
-
-                {/* Content Body */}
-                <div className="px-5 pt-6 bg-[#FDFBF7] rounded-t-[2rem] -mt-6 relative z-10 pb-32">
-                    {/* Thumbnails (Mockup shows them floating above description or title, let's keep them here as small row if needed or hide to match strict mockup. Mockup shows small thumbs on image. Let's stick to Mockup STRICTLY: Thumbs are ON IMAGE in mockup. Moving them back to image container above if strict match needed. User said 'exactly ais adesign'. Mockup has thumbs on image bottom left. I removed them in this block, will revert to image container placement in next step if missed, but checking previous code they were there. I'll add them back to IMAGE container if I replaced whole block. Wait, this replaced block starts after image container closed? No, look at line 186. I am replacing from 186. So I am rewriting Header + Image + Content start. I need to be careful.) */}
-
-                    {/* Title & Reviews */}
-                    <div className="mb-2">
-                        <h1 className="font-serif text-2xl font-medium text-[#2D2D2D] mb-1">{product.title}</h1>
-                        <div className="flex items-center gap-2 text-xs text-[#8D8D8D]">
-                            <div className="flex text-[#C08C6C]">
-                                {[...Array(5)].map((_, i) => (
-                                    <FaStar key={i} className={i < (product.rating || 4) ? "" : "text-[#E5E0D8]"} />
-                                ))}
-                            </div>
-                            <span className="font-bold text-[#2D2D2D]">{product.rating || 4.5}</span>
-                            <span>| {product.numReviews || 120} reviews</span>
-                        </div>
-                    </div>
-
-                    {/* Price */}
-                    <div className="flex items-baseline gap-2 mb-6">
-                        <span className="text-2xl font-bold text-[#2D2D2D]">₹{displayPrice?.toLocaleString('en-IN')}</span>
-                        {product.originalPrice && product.originalPrice > displayPrice && (
-                            <>
-                                <span className="text-lg text-[#ccc] line-through">₹{product.originalPrice.toLocaleString('en-IN')}</span>
-                                <span className="bg-[#C08C6C] text-white text-[10px] font-bold px-1.5 py-0.5 rounded ml-1">
-                                    {Math.round(((product.originalPrice - displayPrice) / product.originalPrice) * 100)}% off
-                                </span>
-                            </>
-                        )}
-                        <span className="text-[10px] text-[#8D8D8D] block w-full mt-0.5">inclusive of all taxes</span>
-                    </div>
-
-                    {/* Selectors - Modified to match Mockup Style (Square Size, Dropdown Color) */}
-                    {/* Dynamic Variants Selection (Mobile) */}
-                    {variantKeys.length > 0 && (
-                        <div className="flex gap-6 mb-6"> {/* Side by Side Selectors if space permits or stack */}
-                            {variantKeys.map(key => {
-                                const uniqueValues = Array.from(new Set(availableVariants.map(v => v.attributes[key])));
-                                // Check Key Type for Styling
-                                const isSize = key.toLowerCase() === 'size';
-                                const isColor = key.toLowerCase() === 'color' || key.toLowerCase() === 'colour';
-
-                                return (
-                                    <div key={key} className={isSize ? "flex-1" : "flex-1"}>
-                                        <div className="flex justify-between items-center mb-2">
-                                            <span className="text-sm font-bold text-[#2D2D2D] capitalize">Select {key}</span>
-                                        </div>
-
-                                        {isSize ? (
-                                            // Square Buttons for Size
-                                            <div className="flex gap-2 flex-wrap">
-                                                {uniqueValues.map((val: any) => {
-                                                    const isSelected = selectedAttributes[key] === val;
-                                                    return (
-                                                        <button
-                                                            key={val}
-                                                            onClick={() => handleAttributeSelect(key, val)}
-                                                            className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-medium transition-colors border ${isSelected ? 'bg-[#ae856b] text-white border-[#ae856b]' : 'bg-[#F2F0EB] text-[#5D5D5D] border-transparent'}`}
-                                                        >
-                                                            {val}
-                                                        </button>
-                                                    )
-                                                })}
-                                            </div>
-                                        ) : isColor ? (
-                                            // Dropdown Style for Color
-                                            <div className="relative">
-                                                <select
-                                                    className="w-full appearance-none bg-[#F2F0EB] border border-transparent rounded-lg py-2 pl-3 pr-8 text-sm text-[#5D5D5D] font-medium focus:outline-none focus:border-[#C08C6C]"
-                                                    value={selectedAttributes[key] || ''}
-                                                    onChange={(e) => handleAttributeSelect(key, e.target.value)}
-                                                >
-                                                    {uniqueValues.map((val: any) => (
-                                                        <option key={val} value={val}>{val}</option>
-                                                    ))}
-                                                </select>
-                                                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[#5D5D5D]">
-                                                    <FaChevronRight className="rotate-90 text-xs opacity-50" />
-                                                </div>
-                                                {/* Color Swatch Preview (Fake) - Optional enhancement */}
-                                                <div className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 rounded bg-[#E8DCC6] pointer-events-none hidden"></div>
-                                            </div>
-                                        ) : (
-                                            // Default Buttons
-                                            <div className="flex gap-3 flex-wrap">
-                                                {uniqueValues.map((val: any) => {
-                                                    const isSelected = selectedAttributes[key] === val;
-                                                    return (
-                                                        <button
-                                                            key={val}
-                                                            onClick={() => handleAttributeSelect(key, val)}
-                                                            className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isSelected ? 'bg-[#ae856b] text-white' : 'bg-[#F2F0EB] text-[#5D5D5D]'}`}
-                                                        >
-                                                            {val}
-                                                        </button>
-                                                    )
-                                                })}
-                                            </div>
-                                        )}
-                                    </div>
-                                )
-                            })}
+                    {/* Discount Badge */}
+                    {product.originalPrice && product.originalPrice > displayPrice && (
+                        <div className="absolute top-4 left-4 bg-[#C08C6C] text-white text-xs font-bold px-2 py-1 rounded-md shadow-sm">
+                            {Math.round(((product.originalPrice - displayPrice) / product.originalPrice) * 100)}% OFF
                         </div>
                     )}
+                </div>
 
-                    {/* Quantity & Add to Cart (Row) */}
-                    <div className="flex gap-4 mb-8">
-                        {/* Quantity Stepper */}
-                        <div className="flex items-center bg-white border border-[#E5E0D8] rounded-xl px-2 h-12 shadow-sm">
-                            <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-8 h-full text-[#2D2D2D] flex items-center justify-center text-lg">-</button>
-                            <span className="w-6 text-center font-bold text-[#2D2D2D]">{quantity}</span>
-                            <button onClick={() => setQuantity(quantity + 1)} className="w-8 h-full text-[#2D2D2D] flex items-center justify-center text-lg">+</button>
+                <div className="px-4 pt-6">
+                    {/* 3. PRODUCT INFO SECTION */}
+                    <h1 className="font-sans text-xl font-bold text-[#2D2D2D] mb-2 leading-tight">{product.title}</h1>
+
+                    <div className="flex items-center gap-2 mb-4">
+                        <div className="bg-[#C08C6C] text-white text-xs font-bold px-1.5 py-0.5 rounded flex items-center gap-1">
+                            {product.rating || 4.5} <FaStar className="text-[10px]" />
                         </div>
+                        <button
+                            onClick={() => document.getElementById('reviews-section')?.scrollIntoView({ behavior: 'smooth' })}
+                            className="text-xs text-[#8D8D8D] underline"
+                        >
+                            ({product.numReviews || 120} Reviews)
+                        </button>
+                    </div>
 
-                        {/* Cart Button */}
+                    {/* 4. PRICE SECTION */}
+                    <div className="flex items-baseline gap-3 mb-6">
+                        <span className="text-2xl font-bold text-[#2D2D2D]">₹{displayPrice?.toLocaleString('en-IN')}</span>
+                        {product.originalPrice && product.originalPrice > displayPrice && (
+                            <span className="text-sm text-[#8D8D8D] line-through">₹{product.originalPrice.toLocaleString('en-IN')}</span>
+                        )}
+                    </div>
+
+                    {/* 5. VARIANT SELECTION & QUANTITY */}
+                    <div className="space-y-6 mb-8">
+                        {/* Variant Logic Reuse */}
+                        {variantKeys.map(key => {
+                            const uniqueValues = Array.from(new Set(availableVariants.map(v => v.attributes[key])));
+                            const isSize = key.toLowerCase() === 'size';
+                            const isColor = key.toLowerCase() === 'color' || key.toLowerCase() === 'colour';
+
+                            return (
+                                <div key={key}>
+                                    <h3 className="text-sm font-bold text-[#2D2D2D] mb-3 capitalize">{key}</h3>
+                                    <div className="flex flex-wrap gap-3">
+                                        {uniqueValues.map((val: any) => {
+                                            const isSelected = selectedAttributes[key] === val;
+                                            return (
+                                                <button
+                                                    key={val}
+                                                    onClick={() => handleAttributeSelect(key, val)}
+                                                    className={`
+                                                        ${isSize
+                                                            ? `w-12 h-12 rounded-lg flex items-center justify-center border font-medium text-sm transition-all ${isSelected ? 'border-[#C08C6C] bg-[#C08C6C] text-white' : 'border-[#E5E0D8] bg-white text-[#5D5D5D]'}`
+                                                            : isColor
+                                                                ? `w-8 h-8 rounded-full border-2 ${isSelected ? 'border-[#C08C6C] ring-2 ring-[#C08C6C]/20' : 'border-transparent'}` // Placeholder for color swatch logic
+                                                                : `px-4 py-2 rounded-lg border text-sm ${isSelected ? 'border-[#C08C6C] bg-[#C08C6C] text-white' : 'border-[#E5E0D8] bg-white text-[#5D5D5D]'}`
+                                                        }
+                                                    `}
+                                                    style={isColor ? { backgroundColor: val.toLowerCase() } : {}} // Basic color mapping
+                                                >
+                                                    {!isColor && val}
+                                                </button>
+                                            )
+                                        })}
+                                    </div>
+                                    {isColor && <div className="text-xs text-[#8D8D8D] mt-1 capitalize">{selectedAttributes[key] || 'Select Color'}</div>}
+                                </div>
+                            )
+                        })}
+
+                        {/* 6. QUANTITY SELECTOR */}
+                        <div>
+                            <h3 className="text-sm font-bold text-[#2D2D2D] mb-3">Quantity</h3>
+                            <div className="flex items-center w-max bg-white border border-[#E5E0D8] rounded-lg h-10">
+                                <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-10 h-full flex items-center justify-center text-[#2D2D2D] active:bg-gray-50 rounded-l-lg">-</button>
+                                <span className="w-8 text-center font-bold text-sm text-[#2D2D2D] border-x border-[#E5E0D8] h-full flex items-center justify-center">{quantity}</span>
+                                <button onClick={() => setQuantity(quantity + 1)} className="w-10 h-full flex items-center justify-center text-[#2D2D2D] active:bg-gray-50 rounded-r-lg">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 7. ACTION BUTTONS (Normal Flow) */}
+                    <div className="grid grid-cols-2 gap-3 mb-8">
                         <button
                             onClick={handleAddToCart}
-                            className={`flex-1 flex items-center justify-center gap-2 bg-[#C08C6C] text-white font-bold rounded-xl h-12 shadow-lg shadow-[#C08C6C]/20 active:scale-95 transition-transform ${isOutOfStock ? 'opacity-50 grayscale' : ''}`}
+                            className={`flex items-center justify-center py-3.5 rounded-xl border border-[#C08C6C] text-[#C08C6C] font-bold text-sm bg-white active:scale-95 transition-transform ${isOutOfStock ? 'opacity-50 grayscale' : ''}`}
                         >
-                            <FaShoppingCart className="text-sm" />
                             {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
                         </button>
+                        <button
+                            onClick={() => {
+                                if (!isOutOfStock) {
+                                    handleAddToCart();
+                                    router.push('/cart'); // Simple Buy Now behavior
+                                }
+                            }}
+                            className={`flex items-center justify-center py-3.5 rounded-xl bg-[#C08C6C] text-white font-bold text-sm shadow-lg shadow-[#C08C6C]/20 active:scale-95 transition-transform ${isOutOfStock ? 'opacity-50 grayscale' : ''}`}
+                        >
+                            Buy Now
+                        </button>
                     </div>
 
-                    {/* Description Preview */}
-                    <div className="mb-8">
-                        <div className="flex justify-between items-center mb-2">
-                            <h3 className="text-sm font-bold text-[#2D2D2D]">Description</h3>
-                            <button onClick={() => setActiveTab('description')} className="text-xs text-[#8D8D8D] hover:text-[#C08C6C]">View All &gt;</button>
-                        </div>
-                        <p className="text-xs text-[#5D5D5D] leading-relaxed line-clamp-3">
+                    {/* 8. DESCRIPTION SECTION */}
+                    <div className="mb-8 border-t border-[#E5E0D8] pt-6">
+                        <h3 className="text-sm font-bold text-[#2D2D2D] mb-2">Description</h3>
+                        <div className={`relative text-sm text-[#5D5D5D] leading-relaxed transition-all duration-300 ${isDescriptionExpanded ? '' : 'max-h-[4.5em] overflow-hidden'}`}>
                             {product.description || "Upgrade your wardrobe with this premium item. Perfect for formal and semi-formal occasions. Made from high-quality materials for lasting comfort and style."}
-                        </p>
+                            {!isDescriptionExpanded && <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-[#FDFBF7] to-transparent"></div>}
+                        </div>
+                        <button
+                            onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                            className="text-[#C08C6C] text-xs font-bold mt-2 hover:underline"
+                        >
+                            {isDescriptionExpanded ? 'Read Less' : 'Read More'}
+                        </button>
+
+                        <button className="w-full mt-4 py-3 border border-[#E5E0D8] rounded-xl text-xs font-bold text-[#2D2D2D] flex justify-between items-center px-4 bg-white">
+                            View All Details
+                            <FaChevronRight className="text-[10px] text-[#8D8D8D]" />
+                        </button>
                     </div>
 
-                    {/* Rate & Review */}
-                    <div className="mb-8">
-                        <div className="flex justify-between items-center mb-2">
-                            <h3 className="text-sm font-bold text-[#2D2D2D]">Rate & Review</h3>
-                            <span className="text-[10px] text-[#8D8D8D]">22 weeks ago</span>
-                        </div>
-                        {/* Stars Input */}
-                        <div className="flex gap-2 mb-3">
-                            {[1, 2, 3, 4, 5].map(s => (
-                                <button key={s} onClick={() => setRating(s)} className={`text-xl ${rating >= s ? 'text-[#C08C6C]' : 'text-[#E5E0D8]'}`}>
-                                    <FaStar />
-                                </button>
-                            ))}
-                        </div>
-                        {/* Input Box */}
-                        <div className="flex items-center gap-2 bg-white border border-[#E5E0D8] rounded-xl px-3 py-2 shadow-sm">
-                            <input
-                                type="text"
+                    {/* 9. RATING & REVIEW SECTION */}
+                    <div id="reviews-section" className="border-t border-[#E5E0D8] pt-6 pb-8">
+                        <h3 className="text-sm font-bold text-[#2D2D2D] mb-4">Ratings & Reviews</h3>
+
+                        {/* Submit Review Card */}
+                        <div className="bg-white p-4 rounded-xl border border-[#E5E0D8] shadow-sm mb-6">
+                            <h4 className="text-xs font-bold text-[#2D2D2D] mb-3">Rate & Review This Product</h4>
+                            <div className="flex gap-2 mb-3">
+                                {[1, 2, 3, 4, 5].map(s => (
+                                    <button key={s} onClick={() => setRating(s)} className={`text-xl ${rating >= s ? 'text-[#C08C6C]' : 'text-[#E5E0D8]'}`}>
+                                        <FaStar />
+                                    </button>
+                                ))}
+                            </div>
+                            <textarea
                                 value={comment}
                                 onChange={e => setComment(e.target.value)}
-                                placeholder="Write your review..."
-                                className="flex-1 text-xs outline-none text-[#2D2D2D] placeholder-[#8D8D8D]"
+                                placeholder="Write your review (min 5 chars)..."
+                                className="w-full bg-[#FAFAFA] border border-[#E5E0D8] rounded-lg p-3 text-xs outline-none focus:border-[#C08C6C] mb-3 resize-none h-20"
                             />
-                            <button className="text-[#ae856b]">
-                                {/* Icon placeholder */}
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                            <button
+                                onClick={handleSubmitReview}
+                                className="w-full bg-[#2D2D2D] text-white text-xs font-bold py-2.5 rounded-lg active:scale-95 transition-transform"
+                            >
+                                Submit Review
                             </button>
                         </div>
-                        <button onClick={handleSubmitReview} className="w-full mt-3 bg-[#C08C6C] text-white text-xs font-bold py-3 rounded-xl shadow-md">
-                            Submit Review
-                        </button>
+
+                        {/* Existing Reviews */}
+                        <div className="space-y-4">
+                            {product.reviews && product.reviews.length > 0 ? (
+                                product.reviews.map((rev: any, idx: number) => (
+                                    <div key={idx} className="bg-white p-4 rounded-xl border border-[#E5E0D8]">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-6 h-6 rounded-full bg-[#E5E0D8] flex items-center justify-center text-[10px] font-bold text-[#5D5D5D]">
+                                                    {rev.name?.[0] || 'U'}
+                                                </div>
+                                                <span className="text-xs font-bold text-[#2D2D2D]">{rev.name || 'User'}</span>
+                                            </div>
+                                            <span className="text-[10px] text-[#8D8D8D]">{new Date(rev.createdAt || Date.now()).toLocaleDateString()}</span>
+                                        </div>
+                                        <div className="flex text-[#C08C6C] text-[10px] mb-2">
+                                            {[...Array(5)].map((_, i) => (
+                                                <FaStar key={i} className={i < (rev.rating || 0) ? "" : "text-[#E5E0D8]"} />
+                                            ))}
+                                        </div>
+                                        <p className="text-xs text-[#5D5D5D] leading-relaxed">{rev.comment}</p>
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="text-xs text-[#8D8D8D] text-center italic">No reviews yet. Be the first to review!</p>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
