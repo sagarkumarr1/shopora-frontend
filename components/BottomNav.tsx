@@ -11,8 +11,8 @@ export default function BottomNav() {
     const { cartItems } = useSelector((state: RootState) => state.cart);
     const cartCount = cartItems.reduce((acc: number, item: any) => acc + item.quantity, 0);
 
-    // Hide BottomNav on Order Success page
-    if (pathname?.startsWith('/order-success')) {
+    // Hide BottomNav on Order Success and Product pages
+    if (pathname?.startsWith('/order-success') || pathname?.startsWith('/product/')) {
         return null;
     }
 

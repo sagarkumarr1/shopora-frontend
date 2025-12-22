@@ -27,6 +27,7 @@ export default function ProductClientView({ product }: { product: any }) {
     const [comment, setComment] = useState('');
     const [image, setImage] = useState('');
     const [quantity, setQuantity] = useState(1);
+    const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
     // Variant State
     const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
