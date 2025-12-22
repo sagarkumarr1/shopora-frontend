@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { useEffect, useState } from 'react';
-import { FaBox, FaChartLine, FaClipboardList, FaSignOutAlt, FaUsers, FaBars, FaTimes, FaTags, FaImages } from 'react-icons/fa';
+import { FaBox, FaChartLine, FaClipboardList, FaSignOutAlt, FaUsers, FaBars, FaTimes, FaTags, FaImages, FaStar } from 'react-icons/fa';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const { user } = useSelector((state: RootState) => state.auth);
@@ -36,6 +36,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         { name: 'Dashboard', path: '/admin', icon: <FaChartLine /> },
         { name: 'Products', path: '/admin/products', icon: <FaBox /> },
         { name: 'Categories', path: '/admin/categories', icon: <FaTags /> },
+        { name: 'Reviews', path: '/admin/reviews', icon: <FaStar /> },
         { name: 'Hero Banners', path: '/admin/hero', icon: <FaImages /> },
         { name: 'Orders', path: '/admin/orders', icon: <FaClipboardList /> },
         { name: 'Users', path: '/admin/users', icon: <FaUsers /> },

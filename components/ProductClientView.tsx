@@ -2,7 +2,7 @@
 
 import Navbar from '@/components/Navbar';
 import { useState, useEffect } from 'react';
-import { FaHeart, FaStar, FaShoppingCart, FaBolt, FaTruck, FaUndo, FaMoneyBillWave, FaRegHeart, FaCheckCircle, FaChevronRight, FaSearch } from 'react-icons/fa';
+import { FaHeart, FaStar, FaShoppingCart, FaBolt, FaTruck, FaUndo, FaMoneyBillWave, FaRegHeart, FaCheckCircle, FaChevronRight, FaSearch, FaEdit, FaTrash, FaTimes } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { addItem, setCheckoutItems } from '@/store/cartSlice';
 import { useRouter } from 'next/navigation';
@@ -21,6 +21,7 @@ export default function ProductClientView({ product }: { product: any }) {
     const dispatch = useDispatch<AppDispatch>();
     const router = useRouter();
     const cartItems = useSelector((state: RootState) => state.cart.cartItems);
+    const { user } = useSelector((state: RootState) => state.auth);
 
     const [activeImage, setActiveImage] = useState(product?.image);
     const [activeTab, setActiveTab] = useState('description');
@@ -29,6 +30,11 @@ export default function ProductClientView({ product }: { product: any }) {
     const [image, setImage] = useState('');
     const [quantity, setQuantity] = useState(1);
     const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+
+    // Edit Review State
+    const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
+    const [editComment, setEditComment] = useState('');
+    const [editRating, setEditRating] = useState(0);
 
     const { scrollDirection, scrollY } = useScrollDirection();
     const isHideHeader = scrollDirection === 'down' && scrollY > 50;
@@ -163,6 +169,44 @@ export default function ProductClientView({ product }: { product: any }) {
             window.location.reload();
         } catch (error: any) {
             toast.error(error.response?.data?.error || "Failed to submit review");
+        }
+    };
+
+    const handleDeleteReview = async (reviewId: string) => {
+        if (window.confirm("Are you sure you want to delete your review?")) {
+            try {
+                await productService.deleteReview(product._id || product.id, reviewId);
+                toast.success("Review deleted");
+                window.location.reload();
+            } catch (error: any) {
+                toast.error(error.response?.data?.error || "Failed to delete review");
+            }
+        }
+    };
+
+    const startEditReview = (review: any) => {
+        setEditingReviewId(review._id);
+        setEditComment(review.comment);
+        setEditRating(review.rating);
+    };
+
+    const cancelEditReview = () => {
+        setEditingReviewId(null);
+        setEditComment('');
+        setEditRating(0);
+    };
+
+    const handleUpdateReview = async (reviewId: string) => {
+        try {
+            await productService.updateReview(product._id || product.id, reviewId, {
+                rating: editRating,
+                comment: editComment
+            });
+            toast.success("Review updated");
+            setEditingReviewId(null);
+            window.location.reload();
+        } catch (error: any) {
+            toast.error(error.response?.data?.error || "Failed to update review");
         }
     };
 
@@ -382,21 +426,62 @@ export default function ProductClientView({ product }: { product: any }) {
                             {product.reviews && product.reviews.length > 0 ? (
                                 product.reviews.map((rev: any, idx: number) => (
                                     <div key={idx} className="bg-white p-4 rounded-xl border border-[#E5E0D8]">
-                                        <div className="flex justify-between items-start mb-2">
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-6 h-6 rounded-full bg-[#E5E0D8] flex items-center justify-center text-[10px] font-bold text-[#5D5D5D]">
-                                                    {rev.name?.[0] || 'U'}
+                                        {editingReviewId === rev._id ? (
+                                            <div>
+                                                <div className="flex justify-between items-center mb-2">
+                                                    <span className="text-xs font-bold text-[#2D2D2D]">Edit Review</span>
+                                                    <button onClick={cancelEditReview} className="text-[#8D8D8D] hover:text-red-500"><FaTimes /></button>
                                                 </div>
-                                                <span className="text-xs font-bold text-[#2D2D2D]">{rev.name || 'User'}</span>
+                                                <div className="flex gap-2 mb-3">
+                                                    {[1, 2, 3, 4, 5].map(s => (
+                                                        <button key={s} onClick={() => setEditRating(s)} className={`text-lg ${editRating >= s ? 'text-[#C08C6C]' : 'text-[#E5E0D8]'}`}>
+                                                            <FaStar />
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                                <textarea
+                                                    value={editComment}
+                                                    onChange={e => setEditComment(e.target.value)}
+                                                    className="w-full bg-[#FAFAFA] border border-[#E5E0D8] rounded-lg p-3 text-xs outline-none focus:border-[#C08C6C] mb-3 resize-none h-20"
+                                                />
+                                                <button
+                                                    onClick={() => handleUpdateReview(rev._id)}
+                                                    className="w-full bg-[#2D2D2D] text-white text-xs font-bold py-2 rounded-lg active:scale-95 transition-transform"
+                                                >
+                                                    Update Review
+                                                </button>
                                             </div>
-                                            <span className="text-[10px] text-[#8D8D8D]">{new Date(rev.createdAt || Date.now()).toLocaleDateString()}</span>
-                                        </div>
-                                        <div className="flex text-[#C08C6C] text-[10px] mb-2">
-                                            {[...Array(5)].map((_, i) => (
-                                                <FaStar key={i} className={i < (rev.rating || 0) ? "" : "text-[#E5E0D8]"} />
-                                            ))}
-                                        </div>
-                                        <p className="text-xs text-[#5D5D5D] leading-relaxed">{rev.comment}</p>
+                                        ) : (
+                                            <>
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-6 h-6 rounded-full bg-[#E5E0D8] flex items-center justify-center text-[10px] font-bold text-[#5D5D5D]">
+                                                            {rev.name?.[0] || 'U'}
+                                                        </div>
+                                                        <span className="text-xs font-bold text-[#2D2D2D]">{rev.name || 'User'}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-[10px] text-[#8D8D8D]">{new Date(rev.createdAt || Date.now()).toLocaleDateString()}</span>
+                                                        {user && rev.user === user._id && (
+                                                            <div className="flex gap-2 ml-2">
+                                                                <button onClick={() => startEditReview(rev)} className="text-[#C08C6C] hover:text-[#A06C4C] transition-colors" title="Edit">
+                                                                    <FaEdit size={12} />
+                                                                </button>
+                                                                <button onClick={() => handleDeleteReview(rev._id)} className="text-red-400 hover:text-red-600 transition-colors" title="Delete">
+                                                                    <FaTrash size={12} />
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <div className="flex text-[#C08C6C] text-[10px] mb-2">
+                                                    {[...Array(5)].map((_, i) => (
+                                                        <FaStar key={i} className={i < (rev.rating || 0) ? "" : "text-[#E5E0D8]"} />
+                                                    ))}
+                                                </div>
+                                                <p className="text-xs text-[#5D5D5D] leading-relaxed">{rev.comment}</p>
+                                            </>
+                                        )}
                                     </div>
                                 ))
                             ) : (

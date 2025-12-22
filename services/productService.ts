@@ -63,6 +63,24 @@ const getCategories = async () => {
     return response.data;
 };
 
+// Get all reviews (Admin)
+const getAllReviews = async () => {
+    const response = await axios.get('products/admin/reviews');
+    return response.data;
+};
+
+// Delete review
+const deleteReview = async (productId: string, reviewId: string) => {
+    const response = await axios.delete(`products/${productId}/reviews/${reviewId}`);
+    return response.data;
+};
+
+// Update review
+const updateReview = async (productId: string, reviewId: string, reviewData: any) => {
+    const response = await axios.put(`products/${productId}/reviews/${reviewId}`, reviewData);
+    return response.data;
+};
+
 const productService = {
     getProducts,
     getProductById,
@@ -72,7 +90,10 @@ const productService = {
     getSuggestions,
     getCategoryDeals,
     createReview,
-    getCategories
+    getCategories,
+    getAllReviews,
+    deleteReview,
+    updateReview
 };
 
 export default productService;

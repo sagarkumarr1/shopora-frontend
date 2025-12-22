@@ -238,40 +238,25 @@ export default function Navbar() {
 
                             {/* Centered Logo Text */}
                             <Link href="/" className="font-serif text-3xl text-[#8B5E3C] tracking-tight">
-                                ApnaShop
+                                ApniShop
                             </Link>
 
-                            {/* Cart Icon */}
-                            <Link href="/cart" className="relative p-2 text-[#5D5D5D]">
-                                <FaShoppingCart className="text-xl" />
-                                {mounted && cartItems.length > 0 && (
-                                    <span className="absolute top-1 right-0 bg-[#C08C6C] text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-white">
-                                        {cartItems.reduce((acc: number, item: any) => acc + item.quantity, 0)}
-                                    </span>
-                                )}
-                            </Link>
-                        </div>
+                            <div className="flex items-center">
+                                {/* Search Icon */}
+                                <Link href="/search" className="p-2 text-[#5D5D5D]">
+                                    <FaSearch className="text-xl" />
+                                </Link>
 
-                        {/* Search Bar Row */}
-                        <div className="px-2 mt-1 relative">
-                            <form onSubmit={handleSearch} className="relative">
-                                <input
-                                    type="text"
-                                    placeholder="Search products"
-                                    className="w-full bg-[#FAFAFA] text-[#2D2D2D] rounded-full py-3.5 pl-12 pr-12 outline-none border border-transparent shadow-sm focus:border-[#C08C6C]/30 focus:bg-white transition-all text-sm placeholder:text-[#9CA3AF]"
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                />
-                                {/* Search Icon Left */}
-                                <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-[#9CA3AF] text-lg" />
-
-                                {/* Filter Icon Right (Visual mostly) */}
-                                <div className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-white rounded-full shadow-sm border border-gray-100 cursor-pointer text-[#C08C6C]">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                                        <path d="M18.75 12.75h1.5a.75.75 0 000-1.5h-1.5a.75.75 0 000 1.5zM12 6a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5A.75.75 0 0112 6zM12 18a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5A.75.75 0 0112 18zM3.75 6.75h1.5a.75.75 0 100-1.5h-1.5a.75.75 0 000 1.5zM5.25 18.75h-1.5a.75.75 0 010-1.5h1.5a.75.75 0 010 1.5zM3 12a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5A.75.75 0 013 12zM9 3.75a2.25 2.25 0 100 4.5 2.25 2.25 0 000-4.5zM12.75 12a2.25 2.25 0 114.5 0 2.25 2.25 0 01-4.5 0zM9 15.75a2.25 2.25 0 100 4.5 2.25 2.25 0 000-4.5z" />
-                                    </svg>
-                                </div>
-                            </form>
+                                {/* Cart Icon */}
+                                <Link href="/cart" className="relative p-2 text-[#5D5D5D]">
+                                    <FaShoppingCart className="text-xl" />
+                                    {mounted && cartItems.length > 0 && (
+                                        <span className="absolute top-1 right-0 bg-[#C08C6C] text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-white">
+                                            {cartItems.reduce((acc: number, item: any) => acc + item.quantity, 0)}
+                                        </span>
+                                    )}
+                                </Link>
+                            </div>
                         </div>
 
                         {/* Mobile Menu Drawer (Left Side) - Only conditionally rendered */}

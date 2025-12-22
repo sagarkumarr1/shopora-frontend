@@ -30,6 +30,7 @@ function SearchContent() {
     const [recentSearches, setRecentSearches] = useState<string[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [isInputFocused, setIsInputFocused] = useState(false);
+    const [suggestionLoading, setSuggestionLoading] = useState(false);
 
     // Determines if this is a Category View or Search View
     const isCategoryView = !!categoryParam && !initialQuery;
@@ -60,12 +61,15 @@ function SearchContent() {
     useEffect(() => {
         const timer = setTimeout(async () => {
             if (searchQuery.trim().length > 1 && isInputFocused) {
+                setSuggestionLoading(true);
                 try {
                     const res = await productService.getSuggestions(searchQuery);
                     setSuggestions(res.data);
                     setShowSuggestions(true);
                 } catch (error) {
                     console.error(error);
+                } finally {
+                    setSuggestionLoading(false);
                 }
             } else {
                 setSuggestions([]);
@@ -264,8 +268,15 @@ function SearchContent() {
                 {/* 1. ENTRY MODE CONTENT (Suggestions / Recent) */}
                 {showEntryMode && (
                     <div className="flex-1 md:hidden animate-in fade-in duration-200">
+                        {/* Suggestion Loader */}
+                        {suggestionLoading && (
+                            <div className="flex items-center justify-center py-8">
+                                <div className="animate-spin rounded-full h-6 w-6 border-2 border-[#C08C6C] border-t-transparent"></div>
+                            </div>
+                        )}
+
                         {/* Live Suggestions */}
-                        {searchQuery.trim() && suggestions.length > 0 && (
+                        {!suggestionLoading && searchQuery.trim() && suggestions.length > 0 && (
                             <div className="mb-8">
                                 {suggestions.map((item) => (
                                     <div
@@ -309,7 +320,7 @@ function SearchContent() {
                         )}
 
                         {/* Empty State / No Suggestions Found when typing */}
-                        {searchQuery.trim() && suggestions.length === 0 && !loading && (
+                        {searchQuery.trim() && suggestions.length === 0 && !suggestionLoading && (
                             <div className="pt-10 text-center">
                                 <p className="text-sm text-[#8D8D8D] italic">No suggestions for '{searchQuery}'</p>
                             </div>
