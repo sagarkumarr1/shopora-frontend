@@ -18,7 +18,7 @@ export default function BottomNav() {
 
     const navItems = [
         { name: 'Home', href: '/', icon: FaHome },
-        { name: 'Categories', href: '/search', icon: FaThLarge }, // Determine if we want a dedicated cats page or just search
+        { name: 'Categories', href: '/categories', icon: FaThLarge }, // Determine if we want a dedicated cats page or just search
         { name: 'Cart', href: '/cart', icon: FaShoppingCart, badge: cartCount },
         { name: 'Account', href: '/account', icon: FaUser },
     ];

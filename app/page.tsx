@@ -94,7 +94,7 @@ export default function Home() {
           <div>
             <div className="flex justify-between items-center mb-4 px-1">
               <h3 className="font-serif text-[1.35rem] text-[#2D2D2D] font-medium">Categories</h3>
-              <Link href="/search" className="text-[#C08C6C] text-sm font-medium flex items-center gap-1">
+              <Link href="/categories" className="text-[#C08C6C] text-sm font-medium flex items-center gap-1">
                 View all <IoIosArrowDown className="-rotate-90 text-xs" />
               </Link>
             </div>
