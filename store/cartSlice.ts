@@ -55,17 +55,19 @@ export const fetchCart = createAsyncThunk(
     async (_, thunkAPI) => {
         try {
             const response = await cartService.getCart();
-            return response.data.data.map((item: any) => ({
-                id: item.product._id || item.product,
-                title: item.title,
-                slug: item.product.slug,
-                price: item.price,
-                image: item.image || item.product.image || 'https://via.placeholder.com/150', // Fallback
-                quantity: item.quantity,
-                product: item.product._id || item.product,
-                variantId: item.variantId,
-                variantAttributes: item.variantAttributes
-            }));
+            return response.data.data
+                .filter((item: any) => item && item.product) // Filter out invalid items
+                .map((item: any) => ({
+                    id: item.product._id || item.product,
+                    title: item.title,
+                    slug: item.product.slug || '',
+                    price: item.price,
+                    image: item.image || item.product.image || 'https://via.placeholder.com/150', // Fallback
+                    quantity: item.quantity,
+                    product: item.product._id || item.product,
+                    variantId: item.variantId,
+                    variantAttributes: item.variantAttributes
+                }));
         } catch (error: any) {
             const message = error.response?.data?.error || error.message;
             return thunkAPI.rejectWithValue(message);
@@ -168,17 +170,19 @@ export const cartSlice = createSlice({
             .addCase(addItem.fulfilled, (state, action) => {
                 if (isLoggedIn()) {
                     if (Array.isArray(action.payload)) {
-                        state.cartItems = action.payload.map((item: any) => ({
-                            id: item.product._id || item.product,
-                            title: item.title,
-                            slug: item.product.slug,
-                            price: item.price,
-                            image: item.image || 'https://via.placeholder.com/150',
-                            quantity: item.quantity,
-                            product: item.product._id || item.product,
-                            variantId: item.variantId,
-                            variantAttributes: item.variantAttributes
-                        }));
+                        state.cartItems = action.payload
+                            .filter((item: any) => item && item.product)
+                            .map((item: any) => ({
+                                id: item.product._id || item.product,
+                                title: item.title,
+                                slug: item.product.slug || '',
+                                price: item.price,
+                                image: item.image || 'https://via.placeholder.com/150',
+                                quantity: item.quantity,
+                                product: item.product._id || item.product,
+                                variantId: item.variantId,
+                                variantAttributes: item.variantAttributes
+                            }));
                     }
                 } else {
                     const item = action.payload as CartItem;
