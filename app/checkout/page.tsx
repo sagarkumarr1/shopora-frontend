@@ -165,7 +165,6 @@ export default function Checkout() {
 
         try {
             const response = await orderService.createOrder(orderData);
-            toast.success("Order Placed Successfully!", { autoClose: 2000 });
             dispatch(clearCart());
             router.push(`/order-success?orderId=${response.data._id}`);
         } catch (error: any) {

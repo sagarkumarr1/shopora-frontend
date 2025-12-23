@@ -32,6 +32,7 @@ export default function ProductClientView({ product }: { product: any }) {
     const [image, setImage] = useState('');
     const [quantity, setQuantity] = useState(1);
     const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+    const [isAddingToCart, setIsAddingToCart] = useState(false);
 
     // Edit Review State
     const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
@@ -120,6 +121,7 @@ export default function ProductClientView({ product }: { product: any }) {
             }
 
             try {
+                setIsAddingToCart(true);
                 console.log("Dispatching addItem...", {
                     id: product._id || product.id,
                     title: product.title,
@@ -140,6 +142,8 @@ export default function ProductClientView({ product }: { product: any }) {
             } catch (err: any) {
                 console.error("Add to cart failed:", err);
                 toast.error(typeof err === 'string' ? err : "Failed to add to cart");
+            } finally {
+                setIsAddingToCart(false);
             }
         }
     };
@@ -453,7 +457,7 @@ export default function ProductClientView({ product }: { product: any }) {
                                     if (!inCart) {
                                         handleAddToCart();
                                     }
-                                    router.push('/cart');
+                                    router.push('/checkout');
                                 }
                             }}
                             className={`flex items-center justify-center py-3.5 rounded-xl bg-[#C08C6C] text-white font-bold text-sm shadow-lg shadow-[#C08C6C]/20 active:scale-95 transition-transform ${isOutOfStock ? 'opacity-50 grayscale' : ''}`}
@@ -660,7 +664,7 @@ export default function ProductClientView({ product }: { product: any }) {
                                     if (!inCart) {
                                         handleAddToCart();
                                     }
-                                    router.push('/cart');
+                                    router.push('/checkout');
                                 }
                             }} className="flex-1 bg-[#2D2D2D] text-white py-4 rounded-2xl font-bold hover:bg-black transition-all">
                                 Buy Now
