@@ -11,7 +11,6 @@ export default function ManageHero() {
     const [loading, setLoading] = useState(true);
     const [formData, setFormData] = useState({
         title: '',
-        title: '',
         subtitle: '',
         image: '',
         mobileImage: '',

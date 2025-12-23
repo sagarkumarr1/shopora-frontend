@@ -35,7 +35,7 @@ export default function Navbar() {
 
     // Scroll Logic for Home Page (Mobile)
     const isHome = pathname === '/';
-    const isHide = isHome && scrollDirection === 'down' && scrollY > 50;
+    const isHide = scrollDirection === 'down' && scrollY > 50;
 
     const handleProfileEnter = () => {
         if (timeoutRef.current) {

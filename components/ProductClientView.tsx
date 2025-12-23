@@ -24,6 +24,7 @@ export default function ProductClientView({ product }: { product: any }) {
     const { user } = useSelector((state: RootState) => state.auth);
 
     const [activeImage, setActiveImage] = useState(product?.image);
+    const [activeImageIndex, setActiveImageIndex] = useState(0); // New state for mobile gallery index
     const [activeTab, setActiveTab] = useState('description');
     const [rating, setRating] = useState(0);
     const [comment, setComment] = useState('');
@@ -256,27 +257,52 @@ export default function ProductClientView({ product }: { product: any }) {
                 <div className="h-14"></div>
 
                 {/* 2. PRODUCT IMAGE SECTION (Swipeable) */}
+                {/* 2. PRODUCT IMAGE SECTION (Swipeable Gallery) */}
                 <div className="relative w-full aspect-[4/5] bg-[#F5F1EB]">
-                    <Image
-                        src={activeImage || '/placeholder.png'}
-                        alt={product.title}
-                        fill
-                        className="object-cover"
-                        priority
-                        onClick={() => { /* Potential Full Screen Trigger */ }}
-                    />
-                    {/* Dots Indicator */}
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
-                        {galleryImages.map((_: any, i: number) => (
-                            <div key={i} className={`w-2 h-2 rounded-full transition-all ${activeImage === galleryImages[i] ? 'bg-[#C08C6C] w-4' : 'bg-white/60'}`} />
+                    {/* Scrollable Container */}
+                    <div
+                        className="w-full h-full flex overflow-x-auto overflow-y-hidden snap-x snap-mandatory scrollbar-hide touch-pan-x"
+                        onScroll={(e) => {
+                            const scrollLeft = e.currentTarget.scrollLeft;
+                            const width = e.currentTarget.offsetWidth;
+                            const newIndex = Math.round(scrollLeft / width);
+                            setActiveImageIndex(newIndex);
+                        }}
+                    >
+                        {galleryImages.map((img: string, idx: number) => (
+                            <div key={idx} className="min-w-full w-full h-full snap-center flex items-center justify-center relative">
+                                <Image
+                                    src={img || '/placeholder.png'}
+                                    alt={`${product.title} - View ${idx + 1}`}
+                                    fill
+                                    className="object-contain p-4" // object-contain as requested
+                                    priority={idx === 0}
+                                />
+                            </div>
                         ))}
                     </div>
+
+                    {/* Dots Indicator */}
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full">
+                        {galleryImages.map((_: any, i: number) => (
+                            <div
+                                key={i}
+                                className={`h-1.5 rounded-full transition-all duration-300 ${activeImageIndex === i ? 'bg-[#2D2D2D] w-4' : 'bg-[#2D2D2D]/30 w-1.5'}`}
+                            />
+                        ))}
+                    </div>
+
                     {/* Discount Badge */}
                     {product.originalPrice && product.originalPrice > displayPrice && (
-                        <div className="absolute top-4 left-4 bg-[#C08C6C] text-white text-xs font-bold px-2 py-1 rounded-md shadow-sm">
+                        <div className="absolute top-4 left-4 bg-[#C08C6C] text-white text-xs font-bold px-2 py-1 rounded-md shadow-sm z-10">
                             {Math.round(((product.originalPrice - displayPrice) / product.originalPrice) * 100)}% OFF
                         </div>
                     )}
+
+                    {/* Wishlist Button (Mobile) */}
+                    <button className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/90 shadow-sm flex items-center justify-center text-[#8D8D8D] z-10">
+                        <FaRegHeart />
+                    </button>
                 </div>
 
                 <div className="px-4 pt-6">
