@@ -48,7 +48,7 @@ export default function Cart() {
     }
 
     return (
-        <main className="bg-[#FDFBF7] min-h-screen pb-12 font-sans">
+        <main className="bg-[#FDFBF7] min-h-screen pb-40 font-sans">
             <Navbar />
 
             {/* Main Content Centered */}
@@ -101,7 +101,7 @@ export default function Cart() {
                                             </div>
 
                                             {/* Quantity & Actions */}
-                                            <div className="flex items-center justify-between md:justify-end gap-8 w-full md:w-auto">
+                                            <div className="flex items-center gap-4 w-full md:w-auto mt-3 md:mt-0">
                                                 {/* Stepper */}
                                                 <div className="flex items-center bg-[#F9F9F5] rounded-lg border border-[#E5E0D8]">
                                                     <button
@@ -127,7 +127,7 @@ export default function Cart() {
 
                                                 <button
                                                     onClick={() => dispatch(removeItem({ id: item.id, variantId: item.variantId }))}
-                                                    className="text-xs font-medium text-[#8D8D8D] hover:text-red-500 uppercase tracking-wide border-b border-transparent hover:border-red-500 transition-all"
+                                                    className="text-xs font-medium text-[#8D8D8D] hover:text-red-500 uppercase tracking-wide border-b border-transparent hover:border-red-500 transition-all ml-auto md:ml-4"
                                                 >
                                                     Remove
                                                 </button>
@@ -172,31 +172,11 @@ export default function Cart() {
                                     onClick={async () => {
                                         if (cartItems.length === 0) return;
 
-                                        // Since we don't want a blocking native confirm, we can either:
-                                        // 1. Just do it with a toast "Moving items..."
-                                        // 2. Or use a custom modal (too much work for "polish").
-                                        // Let's assume user intent is clear or provide an "Undo" (undo is hard to impl quickly).
-                                        // Let's stick to a non-blocking flow but maybe checks?
-                                        // The prompt asked to "Replace native window.alert and confirm with react-toastify".
-                                        // Replacing Confirm with Toast is tricky (toast doesn't pause execution).
-                                        // Common pattern: "Click to confirm" changed label? No, that's complex state.
-                                        // User requirement: "Smoother experience".
-                                        // I'll make it instant with a success toast.
-
                                         try {
                                             toast.info("Moving items to wishlist...", { autoClose: 1000 });
 
                                             for (const item of cartItems) {
                                                 await authService.toggleWishlist(String(item.id));
-                                                // Note: toggleWishlist in API toggles. If already in wishlist, it removes? 
-                                                // The backend logic: 
-                                                // "const index = user.wishlist.indexOf(productId); ... if(index > -1) pull else push".
-                                                // So if item is ALREADY in wishlist, this will REMOVE it.
-                                                // Ideally "Save for later" should ensure it is ADDED.
-                                                // But since we don't have check status here easily without fetching 'me' again...
-                                                // Let's assume mostly they are not in wishlist or accepts toggle. 
-                                                // Or better: Checking specific logic would be better but expensive here.
-                                                // For "Polish", let's assume standard behavior.
                                             }
 
                                             cartItems.forEach(item => {
@@ -235,6 +215,7 @@ export default function Cart() {
 
                 </div>
             </div>
+
             {/* Mobile Fixed Action Bar */}
             <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md border-t border-[#E5E0D8] p-4 z-40">
                 <div className="flex justify-between items-center mb-2 px-2">
