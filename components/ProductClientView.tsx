@@ -419,22 +419,36 @@ export default function ProductClientView({ product }: { product: any }) {
 
                     {/* 7. ACTION BUTTONS (Normal Flow) */}
                     <div className="grid grid-cols-2 gap-3 mb-8">
-                        <button
-                            onClick={handleAddToCart}
-                            className={`flex items-center justify-center py-3.5 rounded-xl border border-[#C08C6C] text-[#C08C6C] font-bold text-sm bg-white active:scale-95 transition-transform ${isOutOfStock ? 'opacity-50 grayscale' : ''}`}
-                        >
-                            {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
-                        </button>
+                        {cartItems.some(item => (item.id === (product._id || product.id) && item.variantId === (currentVariant?._id || currentVariant?.sku))) ? (
+                            <button
+                                onClick={() => router.push('/cart')}
+                                className="flex items-center justify-center py-3.5 rounded-xl bg-[#2D2D2D] text-white font-bold text-sm shadow-lg active:scale-95 transition-transform"
+                            >
+                                Go to Cart <FaChevronRight className="ml-2 text-xs" />
+                            </button>
+                        ) : (
+                            <button
+                                onClick={handleAddToCart}
+                                className={`flex items-center justify-center py-3.5 rounded-xl border border-[#C08C6C] text-[#C08C6C] font-bold text-sm bg-white active:scale-95 transition-transform ${isOutOfStock ? 'opacity-50 grayscale' : ''}`}
+                            >
+                                {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
+                            </button>
+                        )}
+
                         <button
                             onClick={() => {
                                 if (!isOutOfStock) {
-                                    handleAddToCart();
-                                    router.push('/cart'); // Simple Buy Now behavior
+                                    // If already in cart, just go there. Else add and go.
+                                    const inCart = cartItems.some(item => (item.id === (product._id || product.id) && item.variantId === (currentVariant?._id || currentVariant?.sku)));
+                                    if (!inCart) {
+                                        handleAddToCart();
+                                    }
+                                    router.push('/cart');
                                 }
                             }}
                             className={`flex items-center justify-center py-3.5 rounded-xl bg-[#C08C6C] text-white font-bold text-sm shadow-lg shadow-[#C08C6C]/20 active:scale-95 transition-transform ${isOutOfStock ? 'opacity-50 grayscale' : ''}`}
                         >
-                            Buy Now
+                            {isOutOfStock ? 'Out of Stock' : 'Buy Now'}
                         </button>
                     </div>
 
@@ -620,10 +634,25 @@ export default function ProductClientView({ product }: { product: any }) {
 
                         {/* Desktop Buttons */}
                         <div className="flex gap-4 mb-8">
-                            <button onClick={handleAddToCart} className="flex-1 bg-[#C08C6C] text-white py-4 rounded-2xl font-bold hover:bg-[#A06C4C] transition-all">
-                                Add to Cart
-                            </button>
-                            <button onClick={handleBuyNow} className="flex-1 bg-[#2D2D2D] text-white py-4 rounded-2xl font-bold hover:bg-black transition-all">
+                            {cartItems.some(item => (item.id === (product._id || product.id) && item.variantId === (currentVariant?._id || currentVariant?.sku))) ? (
+                                <button onClick={() => router.push('/cart')} className="flex-1 bg-[#2D2D2D] text-white py-4 rounded-2xl font-bold hover:bg-black transition-all flex items-center justify-center gap-2">
+                                    Go to Cart <FaChevronRight className="text-xs" />
+                                </button>
+                            ) : (
+                                <button onClick={handleAddToCart} className="flex-1 bg-[#C08C6C] text-white py-4 rounded-2xl font-bold hover:bg-[#A06C4C] transition-all">
+                                    Add to Cart
+                                </button>
+                            )}
+
+                            <button onClick={() => {
+                                if (!isOutOfStock) {
+                                    const inCart = cartItems.some(item => (item.id === (product._id || product.id) && item.variantId === (currentVariant?._id || currentVariant?.sku)));
+                                    if (!inCart) {
+                                        handleAddToCart();
+                                    }
+                                    router.push('/cart');
+                                }
+                            }} className="flex-1 bg-[#2D2D2D] text-white py-4 rounded-2xl font-bold hover:bg-black transition-all">
                                 Buy Now
                             </button>
                         </div>
