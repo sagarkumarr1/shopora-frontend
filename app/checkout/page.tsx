@@ -122,11 +122,23 @@ export default function Checkout() {
         const selectedAddress = addresses.find(a => a._id === selectedAddressId);
         if (!selectedAddress) return;
 
+        // Payment Simulation
+        if (paymentMethod === 'Online') {
+            // Show processing modal or toast
+            const toastId = toast.loading("Processing Secure Payment...", { autoClose: false });
+
+            // Simulate delay
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            toast.update(toastId, { render: "Payment Authorized!", type: "success", isLoading: false, autoClose: 1000 });
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
         const orderData = {
             orderItems: checkoutItems.map(item => ({
                 title: item.title,
                 quantity: Number(item.quantity) || 1,
-                image: item.image || 'https://via.placeholder.com/150', // Client-side fallback to prevent backend crash
+                image: item.image || 'https://via.placeholder.com/150',
                 price: Number(item.price) || 0,
                 product: item.id,
                 variantId: item.variantId,
@@ -145,7 +157,10 @@ export default function Checkout() {
             itemsPrice: totalPrice,
             shippingPrice: deliveryCharges,
             taxPrice: 0,
-            totalPrice: finalAmount
+            totalPrice: finalAmount,
+            // If online, ideally we send paymentResult, but for now just the method
+            isPaid: paymentMethod === 'Online',
+            paidAt: paymentMethod === 'Online' ? Date.now() : undefined,
         };
 
         try {
@@ -387,7 +402,7 @@ export default function Checkout() {
                                     {/* Online (Disabled/Mock) */}
                                     <div
                                         onClick={() => setPaymentMethod('Online')}
-                                        className={`cursor-pointer p-5 rounded-xl border-2 flex items-center gap-4 transition-all opacity-60 ${paymentMethod === 'Online' ? 'border-[#C08C6C] bg-[#C08C6C]/5' : 'border-[#F0F0E0] hover:border-[#E5E0D8]'}`}
+                                        className={`cursor-pointer p-5 rounded-xl border-2 flex items-center gap-4 transition-all ${paymentMethod === 'Online' ? 'border-[#C08C6C] bg-[#C08C6C]/5' : 'border-[#F0F0E0] hover:border-[#E5E0D8]'}`}
                                     >
                                         <div className={`w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${paymentMethod === 'Online' ? 'border-[#C08C6C]' : 'border-[#D1D1D1]'}`}>
                                             {paymentMethod === 'Online' && <div className="w-2.5 h-2.5 rounded-full bg-[#C08C6C]"></div>}

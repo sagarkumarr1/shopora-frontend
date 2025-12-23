@@ -166,8 +166,45 @@ export default function Cart() {
                                 >
                                     Proceed to Checkout
                                 </button>
-                                <button className="w-full bg-[#F5F5F0] text-[#8D8D8D] font-medium py-4 rounded-xl hover:bg-[#E5E0D8] hover:text-[#5D5D5D] transition-colors">
-                                    Save for Later
+                                <button
+                                    onClick={async () => {
+                                        try {
+                                            const authService = (await import('@/services/authService')).default;
+                                            // Iterate and add all items to wishlist? Or just clear cart?
+                                            // Requirement says "Save for Later" usually applies to individual items. 
+                                            // The UI shows a general button in the summary. 
+                                            // Let's assume it saves ALL items for now or check if there was a per-item button.
+                                            // Wait, looking at lines 169-171, it's a general button under "Proceed to Checkout".
+                                            // Let's look at lines 126-131, there is a "Remove" button.
+                                            // Actually, usually "Save for Later" is per item. 
+                                            // But the design in line 169 is a general button. 
+                                            // Let's make it save ALL items to wishlist then clear cart.
+
+                                            if (!confirm("Move all items to wishlist?")) return;
+
+                                            for (const item of cartItems) {
+                                                await authService.toggleWishlist(String(item.id));
+                                            }
+                                            dispatch(setCheckoutItems([])); // Clear... wait, clearCart action needed? 
+                                            // We don't have clearCart imported here, let's import it or just iterate remove.
+                                            // Actually simpler: just loop remove.
+                                            // Better: Import clearCart if available or use removeItem.
+                                            // Let's stick to the prompt: "Connect "Save for Later" button to toggleWishlist API. Upon success, remove item from Cart."
+
+                                            // Since it's a bulk action button:
+                                            cartItems.forEach(item => {
+                                                dispatch(removeItem({ id: item.id, variantId: item.variantId }));
+                                            });
+
+                                            alert("Items moved to Wishlist!");
+                                        } catch (e) {
+                                            console.error(e);
+                                            alert("Failed to save items.");
+                                        }
+                                    }}
+                                    className="w-full bg-[#F5F5F0] text-[#8D8D8D] font-medium py-4 rounded-xl hover:bg-[#E5E0D8] hover:text-[#5D5D5D] transition-colors"
+                                >
+                                    Save Bag for Later
                                 </button>
                             </div>
                         </div>

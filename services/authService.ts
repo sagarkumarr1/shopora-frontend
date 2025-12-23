@@ -60,11 +60,31 @@ const getAllUsers = async () => {
     return response.data;
 };
 
+// Get current user
+const getMe = async () => {
+    const response = await axios.get('auth/me');
+    return response.data;
+};
+
+// Update Details
+const updateDetails = async (userData: any) => {
+    const response = await axios.put('auth/updatedetails', userData);
+    return response.data;
+};
+
+// Toggle Wishlist
+const toggleWishlist = async (productId: string) => {
+    const response = await axios.put(`auth/wishlist/${productId}`);
+    return response.data;
+};
+
 const authService = {
     register,
-    logout,
     login,
-    getAllUsers
+    logout,
+    getMe,
+    updateDetails,
+    toggleWishlist
 };
 
 export default authService;

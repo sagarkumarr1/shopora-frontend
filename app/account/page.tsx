@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import { logout } from '@/store/authSlice';
 import orderService from '@/services/orderService';
 import addressService from '@/services/addressService';
-import { FaBox, FaUser, FaMapMarkerAlt, FaSignOutAlt, FaChevronRight, FaSpinner, FaTruck } from 'react-icons/fa';
+import { FaBox, FaUser, FaMapMarkerAlt, FaSignOutAlt, FaChevronRight, FaSpinner, FaTruck, FaHeart, FaSave, FaExclamationCircle } from 'react-icons/fa';
 import Link from 'next/link';
 
 export default function Account() {
@@ -16,11 +16,18 @@ export default function Account() {
     const router = useRouter();
     const dispatch = useDispatch<AppDispatch>();
 
-    const [activeTab, setActiveTab] = useState('orders'); // 'orders', 'profile', 'addresses'
+    const [activeTab, setActiveTab] = useState('orders'); // 'orders', 'profile', 'addresses', 'wishlist'
     const [orders, setOrders] = useState<any[]>([]);
     const [addresses, setAddresses] = useState<any[]>([]);
+    const [wishlist, setWishlist] = useState<any[]>([]); // New State for Wishlist
     const [loadingOrders, setLoadingOrders] = useState(false);
     const [loadingAddresses, setLoadingAddresses] = useState(false);
+    const [loadingWishlist, setLoadingWishlist] = useState(false);
+
+    // Profile Edit State
+    const [isEditingProfile, setIsEditingProfile] = useState(false);
+    const [profileName, setProfileName] = useState('');
+    const [profileEmail, setProfileEmail] = useState('');
 
     useEffect(() => {
         if (!user) {
@@ -42,8 +49,57 @@ export default function Account() {
                 .then(res => setAddresses(res.data))
                 .catch(err => console.error(err))
                 .finally(() => setLoadingAddresses(false));
+        } else if (activeTab === 'wishlist') {
+            // Since wishlist is embedded in User object, we might need to re-fetch "Me" or trust local state if we sync it.
+            // But for best practice, let's re-fetch "Me" to get latest wishlist or access it from props if available.
+            // Actually, the authService.getMe() populates it now.
+            import('@/services/authService').then(module => {
+                setLoadingWishlist(true);
+                module.default.getMe().then(res => {
+                    // Update Redux state too if possible, but for now local state
+                    setWishlist(res.data.wishlist || []);
+                }).catch(err => console.error(err))
+                    .finally(() => setLoadingWishlist(false));
+            });
         }
     }, [activeTab]);
+
+    // Init Profile Form
+    useEffect(() => {
+        if (user) {
+            setProfileName(user.name);
+            setProfileEmail(user.email);
+        }
+    }, [user]);
+
+    const handleUpdateProfile = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            const authService = (await import('@/services/authService')).default;
+            const res = await authService.updateDetails({ name: profileName, email: profileEmail });
+            alert('Profile updated successfully');
+            setIsEditingProfile(false);
+            // Optionally dispatch to update Redux user state here if we had action exposed, 
+            // but a page reload or re-fetch 'Me' would do.
+            window.location.reload();
+        } catch (err: any) {
+            alert(err.response?.data?.error || 'Failed to update profile');
+        }
+    };
+
+    const handleRemoveFromWishlist = async (e: React.MouseEvent, productId: string) => {
+        e.stopPropagation();
+        if (!confirm("Remove from wishlist?")) return;
+
+        try {
+            const authService = (await import('@/services/authService')).default;
+            await authService.toggleWishlist(productId);
+            // Remove from local state
+            setWishlist(prev => prev.filter(item => item._id !== productId));
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
     const handleLogout = () => {
         dispatch(logout());
@@ -109,6 +165,14 @@ export default function Account() {
                             <FaBox className="text-lg" />
                             <span className="flex-1">My Orders</span>
                             {activeTab === 'orders' && <FaChevronRight className="text-xs" />}
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('wishlist')}
+                            className={`w-full text-left px-6 py-4 flex items-center gap-4 font-medium transition-all rounded-xl mb-1 ${activeTab === 'wishlist' ? 'bg-[#C08C6C]/10 text-[#C08C6C]' : 'text-[#5D5D5D] hover:bg-[#F9F9F5] hover:text-[#2D2D2D]'}`}
+                        >
+                            <FaHeart className="text-lg" />
+                            <span className="flex-1">My Wishlist</span>
+                            {activeTab === 'wishlist' && <FaChevronRight className="text-xs" />}
                         </button>
                         <button
                             onClick={() => setActiveTab('profile')}
@@ -227,29 +291,99 @@ export default function Account() {
                     {/* PROFILE VIEW */}
                     {activeTab === 'profile' && (
                         <div className="bg-white shadow-xl shadow-[#C08C6C]/5 rounded-[2.5rem] border border-[#E5E0D8] p-8 md:p-10 min-h-[600px]">
-                            <h2 className="font-serif text-2xl text-[#2D2D2D] border-b border-[#F0F0E0] pb-6 mb-8">Personal Information</h2>
-
-                            <div className="space-y-8 max-w-xl">
-                                <div>
-                                    <label className="text-xs font-bold text-[#8D8D8D] uppercase tracking-wider block mb-2">Your Name</label>
-                                    <div className="font-medium text-[#2D2D2D] text-xl pb-2 border-b border-[#E5E0D8]">{user.name}</div>
-                                </div>
-
-                                <div>
-                                    <label className="text-xs font-bold text-[#8D8D8D] uppercase tracking-wider block mb-2">Email Address</label>
-                                    <div className="font-medium text-[#2D2D2D] text-xl pb-2 border-b border-[#E5E0D8]">{user.email}</div>
-                                </div>
-
-                                <div>
-                                    <label className="text-xs font-bold text-[#8D8D8D] uppercase tracking-wider block mb-2">Role</label>
-                                    <div className="font-medium text-[#2D2D2D] text-xl pb-2 border-b border-[#E5E0D8] capitalize">{user.role}</div>
-                                </div>
-
-                                <div className="bg-[#F9F9F5] text-[#5D5D5D] p-5 rounded-xl text-sm border border-[#E5E0D8] flex items-start gap-3">
-                                    <div className="text-[#C08C6C] mt-0.5"><FaUser /></div>
-                                    <p>Profile editing is currently disabled in this demo.</p>
-                                </div>
+                            <div className="flex justify-between items-center border-b border-[#F0F0E0] pb-6 mb-8">
+                                <h2 className="font-serif text-2xl text-[#2D2D2D]">Personal Information</h2>
+                                {!isEditingProfile && (
+                                    <button onClick={() => setIsEditingProfile(true)} className="text-[#C08C6C] font-bold text-sm uppercase tracking-wider hover:underline">Edit</button>
+                                )}
                             </div>
+
+                            {isEditingProfile ? (
+                                <form onSubmit={handleUpdateProfile} className="space-y-6 max-w-xl">
+                                    <div>
+                                        <label className="text-xs font-bold text-[#8D8D8D] uppercase tracking-wider block mb-2">Your Name</label>
+                                        <input
+                                            type="text"
+                                            value={profileName}
+                                            onChange={(e) => setProfileName(e.target.value)}
+                                            className="w-full p-3 border border-[#E5E0D8] rounded-xl focus:border-[#C08C6C] outline-none text-[#2D2D2D] font-medium"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-bold text-[#8D8D8D] uppercase tracking-wider block mb-2">Email Address</label>
+                                        <input
+                                            type="email"
+                                            value={profileEmail}
+                                            onChange={(e) => setProfileEmail(e.target.value)}
+                                            className="w-full p-3 border border-[#E5E0D8] rounded-xl focus:border-[#C08C6C] outline-none text-[#2D2D2D] font-medium"
+                                        />
+                                    </div>
+                                    <div className="flex gap-4 pt-4">
+                                        <button type="submit" className="bg-[#2D2D2D] text-white px-8 py-3 rounded-xl font-bold hover:bg-black transition-colors flex items-center gap-2">
+                                            <FaSave /> Save Changes
+                                        </button>
+                                        <button type="button" onClick={() => setIsEditingProfile(false)} className="bg-[#F5F5F0] text-[#5D5D5D] px-8 py-3 rounded-xl font-bold hover:bg-[#E5E0D8] transition-colors">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </form>
+                            ) : (
+                                <div className="space-y-8 max-w-xl">
+                                    <div>
+                                        <label className="text-xs font-bold text-[#8D8D8D] uppercase tracking-wider block mb-2">Your Name</label>
+                                        <div className="font-medium text-[#2D2D2D] text-xl pb-2 border-b border-[#E5E0D8]">{user.name}</div>
+                                    </div>
+
+                                    <div>
+                                        <label className="text-xs font-bold text-[#8D8D8D] uppercase tracking-wider block mb-2">Email Address</label>
+                                        <div className="font-medium text-[#2D2D2D] text-xl pb-2 border-b border-[#E5E0D8]">{user.email}</div>
+                                    </div>
+
+                                    <div>
+                                        <label className="text-xs font-bold text-[#8D8D8D] uppercase tracking-wider block mb-2">Role</label>
+                                        <div className="font-medium text-[#2D2D2D] text-xl pb-2 border-b border-[#E5E0D8] capitalize">{user.role}</div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* WISHLIST VIEW */}
+                    {activeTab === 'wishlist' && (
+                        <div className="bg-white shadow-xl shadow-[#C08C6C]/5 rounded-[2.5rem] border border-[#E5E0D8] min-h-[600px] overflow-hidden">
+                            <h2 className="px-8 py-6 font-serif text-2xl text-[#2D2D2D] border-b border-[#F0F0E0]">My Wishlist</h2>
+
+                            {loadingWishlist ? (
+                                <div className="flex justify-center py-20"><FaSpinner className="animate-spin text-4xl text-[#C08C6C]" /></div>
+                            ) : wishlist.length === 0 ? (
+                                <div className="p-12 text-center flex flex-col items-center">
+                                    <div className="w-32 h-32 bg-[#F9F9F5] rounded-full flex items-center justify-center mb-6 text-4xl text-[#C08C6C]/30">
+                                        <FaHeart />
+                                    </div>
+                                    <h3 className="font-serif text-xl text-[#2D2D2D] mb-2">Your wishlist is empty</h3>
+                                    <p className="text-[#8D8D8D] mb-6">Save items you love here for later.</p>
+                                    <Link href="/" className="bg-[#C08C6C] text-white px-8 py-3 rounded-xl font-bold hover:bg-[#A06C4C] transition-all shadow-lg hover:shadow-xl">Explore Products</Link>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-8">
+                                    {wishlist.map((item) => (
+                                        <div key={item._id} onClick={() => router.push(`/product/${item.slug || item._id}`)} className="group cursor-pointer">
+                                            <div className="relative aspect-[3/4] bg-[#F5F5F0] rounded-2xl overflow-hidden mb-4 border border-[#E5E0D8]">
+                                                <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                                <button
+                                                    onClick={(e) => handleRemoveFromWishlist(e, item._id)}
+                                                    className="absolute top-3 right-3 w-8 h-8 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-red-500 shadow-sm hover:bg-white hover:scale-110 transition-all"
+                                                    title="Remove from Wishlist"
+                                                >
+                                                    <FaHeart />
+                                                </button>
+                                            </div>
+                                            <h3 className="font-serif text-[#2D2D2D] text-lg leading-tight mb-1 group-hover:text-[#C08C6C] transition-colors">{item.title}</h3>
+                                            <div className="font-bold text-[#2D2D2D]">₹{item.price?.toLocaleString()}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     )}
 
