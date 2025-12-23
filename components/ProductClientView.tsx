@@ -107,9 +107,12 @@ export default function ProductClientView({ product }: { product: any }) {
 
     const handleAddToCart = async () => {
         if (product) {
-            // Validation for variants
+            // Validation for variants ONLY if variants exist
             if (availableVariants.length > 0 && !currentVariant) {
-                return toast.error("Please select a valid combination of options");
+                // Try to fallback to default if just one variant exists or auto-select
+                // But for now, just toast error.
+                console.error("No variant selected", { availableVariants, selectedAttributes });
+                return toast.error("Please select options (Size/Color)");
             }
 
             if (isOutOfStock) {
@@ -117,6 +120,12 @@ export default function ProductClientView({ product }: { product: any }) {
             }
 
             try {
+                console.log("Dispatching addItem...", {
+                    id: product._id || product.id,
+                    title: product.title,
+                    variantId: currentVariant?._id || currentVariant?.sku,
+                });
+
                 await dispatch(addItem({
                     id: product._id || product.id,
                     title: product.title,
@@ -129,6 +138,7 @@ export default function ProductClientView({ product }: { product: any }) {
                 })).unwrap();
                 toast.success("Added to cart!");
             } catch (err: any) {
+                console.error("Add to cart failed:", err);
                 toast.error(typeof err === 'string' ? err : "Failed to add to cart");
             }
         }
