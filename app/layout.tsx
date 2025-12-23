@@ -66,7 +66,7 @@ export default function RootLayout({
         <Providers>
           {children}
           <BottomNav />
-          <ToastContainer position="bottom-right" theme="light" />
+          <ToastContainer position="bottom-right" theme="light" autoClose={300} hideProgressBar={true} />
         </Providers>
       </body>
     </html>

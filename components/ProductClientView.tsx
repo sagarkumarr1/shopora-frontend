@@ -11,6 +11,7 @@ import { AppDispatch, RootState } from '@/store/store';
 import Image from 'next/image';
 import productService from '@/services/productService';
 import Link from 'next/link';
+import authService from '@/services/authService'; // Added import
 import Skeleton from './Skeleton';
 import ProductImageGallery from './ProductImageGallery';
 import useScrollDirection from '@/hooks/useScrollDirection';
@@ -213,6 +214,41 @@ export default function ProductClientView({ product }: { product: any }) {
 
     const [isWishlisted, setIsWishlisted] = useState(false);
 
+    useEffect(() => {
+        if (user && user.wishlist && product) {
+            const pid = product._id || product.id;
+            setIsWishlisted(user.wishlist.some((item: any) => (item._id || item) === pid));
+        }
+    }, [user, product]);
+
+    const handleToggleWishlist = async () => {
+        if (!user) {
+            toast.info("Please login to use wishlist");
+            router.push('/login');
+            return;
+        }
+
+        const pid = product._id || product.id;
+        try {
+            // Optimistic update
+            setIsWishlisted(!isWishlisted);
+            await authService.toggleWishlist(pid);
+            // Wait, looking at imports, authService is NOT imported. product service usually doesn't have toggleWishlist. 
+            // The file imports productService. Does it export toggleWishlist? 
+            // Let's check imports. Lines 1-18. authService is NOT imported.
+            // I need to use authService. I should allow the tool to add import or just add it here?
+            // "I cannot make multiple parallel calls to this tool ... for the same file". 
+            // So I must do usage + import in one go if I can, OR just use `import('@/services/authService')` dynamic if lazy.
+            // But let's look at `productService` usage in line 160. 
+            // I will use dynamic import for now or assume I will fix imports in next step if I fail.
+            // Actually, best to add import in a separate chunk in this call.
+
+            toast.success(isWishlisted ? "Removed from wishlist" : "Added to wishlist");
+        } catch (error) {
+            setIsWishlisted(!isWishlisted); // Revert
+            toast.error("Failed to update wishlist");
+        }
+    };
     if (!product) {
         return (
             <div className="min-h-screen bg-[#FDFBF7] flex items-center justify-center">
@@ -300,8 +336,11 @@ export default function ProductClientView({ product }: { product: any }) {
                     )}
 
                     {/* Wishlist Button (Mobile) */}
-                    <button className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/90 shadow-sm flex items-center justify-center text-[#8D8D8D] z-10">
-                        <FaRegHeart />
+                    <button
+                        onClick={handleToggleWishlist}
+                        className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/90 shadow-sm flex items-center justify-center text-[#8D8D8D] z-10 transition-transform active:scale-95"
+                    >
+                        {isWishlisted ? <FaHeart className="text-[#C08C6C]" /> : <FaRegHeart />}
                     </button>
                 </div>
 
