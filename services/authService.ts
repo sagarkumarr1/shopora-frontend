@@ -84,7 +84,8 @@ const authService = {
     logout,
     getMe,
     updateDetails,
-    toggleWishlist
+    toggleWishlist,
+    getAllUsers
 };
 
 export default authService;
